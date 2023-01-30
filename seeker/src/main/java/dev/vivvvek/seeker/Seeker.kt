@@ -25,9 +25,9 @@ fun Seeker(
     value: Float,
     range: ClosedFloatingPointRange<Float>,
     onValueChange: (Float) -> Unit,
-    onValueChangeFinished: () -> Unit,
-    segments: List<Segment>,
-    enabled: Boolean,
+    onValueChangeFinished: (() -> Unit)? = null,
+    segments: List<Segment> = emptyList(),
+    enabled: Boolean = true,
     colors: SeekerColors = SeekerDefaults.seekerColors(),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     modifier: Modifier = Modifier
