@@ -15,7 +15,9 @@
  */
 package dev.vivvvek.seeker
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 
 @Composable
@@ -23,7 +25,12 @@ fun Seeker(
     value: Float,
     range: ClosedFloatingPointRange<Float>,
     onValueChange: (Float) -> Unit,
+    onValueChangeFinished: () -> Unit,
     segments: List<Segment>,
+    enabled: Boolean,
+    colors: SeekerColors = SeekerDefaults.seekerColors(),
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     modifier: Modifier = Modifier
 ) {
+
 }

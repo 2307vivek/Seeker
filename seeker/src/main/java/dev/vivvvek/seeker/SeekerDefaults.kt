@@ -23,6 +23,8 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 
 object SeekerDefaults {
 
@@ -44,6 +46,9 @@ object SeekerDefaults {
         disabledThumbColor = disabledThumbColor,
         readAheadColor = readAheadColor
     )
+
+    @Composable
+    fun gap(gap: Dp = 4.dp) : Dp = gap
 
     private const val TrackAlpha = 0.24f
     private const val DisabledTrackAlpha = 0.12f
