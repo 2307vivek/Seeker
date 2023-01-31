@@ -48,7 +48,7 @@ object SeekerDefaults {
     )
 
     @Composable
-    fun gap(gap: Dp = 4.dp) : Dp = gap
+    fun gap(gap: Dp = 4.dp) : State<Dp> = rememberUpdatedState(gap)
 
     private const val TrackAlpha = 0.24f
     private const val DisabledTrackAlpha = 0.12f
