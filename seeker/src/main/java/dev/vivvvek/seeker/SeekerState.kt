@@ -16,18 +16,24 @@
 package dev.vivvvek.seeker
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.Color
 
 @Stable
-class SeekerState
+class SeekerState {
+
+}
 
 @Composable
 fun rememberSeekerState(): SeekerState = remember {
     SeekerState()
 }
 
+@Immutable
 data class Segment(
     val name: String,
-    val start: Float
+    val start: Float,
+    val color: Color = Color.Unspecified
 )
