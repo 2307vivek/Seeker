@@ -23,6 +23,8 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 
 object SeekerDefaults {
 
@@ -45,9 +47,27 @@ object SeekerDefaults {
         readAheadColor = readAheadColor
     )
 
+    @Composable
+    fun seekerDimensions(
+        trackHeight: Dp = TrackHeight,
+        progressHeight: Dp = ProgressHeight,
+        thumbRadius: Dp = ThumbRadius,
+        gap: Dp = Gap
+    ) : SeekerDimensions = DefaultSeekerDimensions(
+        trackHeight = trackHeight,
+        progressHeight = progressHeight,
+        thumbRadius = thumbRadius,
+        gap = gap
+    )
+
     private const val TrackAlpha = 0.24f
     private const val DisabledTrackAlpha = 0.12f
     private const val DisabledProgressAlpha = 0.32f
+
+    private val ThumbRadius = 10.dp
+    private val TrackHeight = 4.dp
+    private val ProgressHeight = 4.dp
+    private val Gap = 2.dp
 }
 
 @Stable
@@ -64,6 +84,49 @@ interface SeekerColors {
 
     @Composable
     fun readAheadColor(enabled: Boolean): State<Color>
+}
+
+@Stable
+interface SeekerDimensions {
+    @Composable
+    fun trackHeight() : State<Dp>
+
+    @Composable
+    fun progressHeight() : State<Dp>
+
+    @Composable
+    fun gap() : State<Dp>
+
+    @Composable
+    fun thumbRadius() : State<Dp>
+}
+
+@Immutable
+internal class DefaultSeekerDimensions(
+    val trackHeight: Dp,
+    val progressHeight: Dp,
+    val gap: Dp,
+    val thumbRadius: Dp
+) : SeekerDimensions {
+    @Composable
+    override fun trackHeight(): State<Dp> {
+        return rememberUpdatedState(trackHeight)
+    }
+
+    @Composable
+    override fun progressHeight(): State<Dp> {
+        return rememberUpdatedState(progressHeight)
+    }
+
+    @Composable
+    override fun gap(): State<Dp> {
+        return rememberUpdatedState(gap)
+    }
+
+    @Composable
+    override fun thumbRadius(): State<Dp> {
+        return rememberUpdatedState(thumbRadius)
+    }
 }
 
 @Immutable
