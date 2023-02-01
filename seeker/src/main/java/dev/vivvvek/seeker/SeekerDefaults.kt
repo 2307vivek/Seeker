@@ -127,6 +127,30 @@ internal class DefaultSeekerDimensions(
     override fun thumbRadius(): State<Dp> {
         return rememberUpdatedState(thumbRadius)
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || this::class != other::class) return false
+
+        other as DefaultSeekerDimensions
+
+        if (trackHeight != other.trackHeight) return false
+        if (progressHeight != other.progressHeight) return false
+        if (gap != other.gap) return false
+        if (thumbRadius != other.thumbRadius) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = trackHeight.hashCode()
+
+        result = 31 * result + progressHeight.hashCode()
+        result = 31 * result + gap.hashCode()
+        result = 31 * result + thumbRadius.hashCode()
+
+        return result
+    }
 }
 
 @Immutable
