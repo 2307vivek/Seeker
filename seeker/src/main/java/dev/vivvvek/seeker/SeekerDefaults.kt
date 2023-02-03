@@ -68,6 +68,9 @@ object SeekerDefaults {
     private val TrackHeight = 4.dp
     private val ProgressHeight = 4.dp
     private val Gap = 2.dp
+
+    internal val MinSliderHeight = 48.dp
+    internal val MinSliderWidth = ThumbRadius * 2
 }
 
 @Stable

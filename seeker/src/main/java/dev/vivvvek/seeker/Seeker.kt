@@ -22,9 +22,11 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,20 +34,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 
 @Composable
 fun Seeker(
-    value: Float,
+    progress: Float,
     range: ClosedFloatingPointRange<Float> = 0f..1f,
-    onValueChange: (Float) -> Unit,
-    onValueChangeFinished: (() -> Unit)? = null,
+    onProgressChange: (Float) -> Unit,
+    onProgressChangeFinished: (() -> Unit)? = null,
     segments: List<Segment> = emptyList(),
     enabled: Boolean = true,
     colors: SeekerColors = SeekerDefaults.seekerColors(),
@@ -59,15 +62,26 @@ fun Seeker(
         }
     }
 
-    Track(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(100.dp),
-        enabled = enabled,
-        segments = segments,
-        colors = colors,
-        dimensions = dimensions
-    )
+    BoxWithConstraints {
+        val thumbRadius by dimensions.thumbRadius()
+        val startPx = thumbRadius
+        val endPx = constraints.maxWidth.toFloat()
+        val widthPx: Float
+
+        with(LocalDensity.current) {
+            widthPx = endPx - startPx.toPx()
+        }
+
+        Box(modifier = Modifier.defaultSeekerDimensions(dimensions)) {
+            Track(
+                modifier = Modifier.fillMaxSize(),
+                enabled = enabled,
+                segments = segments,
+                colors = colors,
+                dimensions = dimensions
+            )
+        }
+    }
 }
 
 @Composable
@@ -91,7 +105,6 @@ private fun Track(
     }
 
     val scope = rememberCoroutineScope()
-    Text(text = pressOffset.toString())
     Canvas(
         modifier = modifier
             .draggable(draggableState, orientation = Orientation.Horizontal)
@@ -141,12 +154,21 @@ fun DrawScope.drawSegment(
     )
 }
 
+private fun Modifier.defaultSeekerDimensions(dimensions: SeekerDimensions) = composed {
+    with(dimensions) {
+        Modifier.heightIn(
+            max = thumbRadius().value.coerceAtLeast(SeekerDefaults.MinSliderHeight)
+        ).widthIn(
+            min = SeekerDefaults.MinSliderWidth
+        )
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun SeekerPreview() {
     Seeker(
-        value = 0f,
-        onValueChange = { },
-        modifier = Modifier.fillMaxWidth()
+        progress = 0f,
+        onProgressChange = { },
     )
 }
