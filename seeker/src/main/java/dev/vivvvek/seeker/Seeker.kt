@@ -16,15 +16,29 @@
 package dev.vivvvek.seeker
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.MutatePriority
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 
 @Composable
 fun Seeker(
@@ -46,7 +60,9 @@ fun Seeker(
     }
 
     Track(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(100.dp),
         enabled = enabled,
         segments = segments,
         colors = colors,
@@ -55,30 +71,74 @@ fun Seeker(
 }
 
 @Composable
-fun Track(
+private fun Track(
     modifier: Modifier,
     enabled: Boolean,
     segments: List<Segment>,
     colors: SeekerColors,
     dimensions: SeekerDimensions
 ) {
-    val trackColor = colors.trackColor(enabled)
+    val trackColor by colors.trackColor(enabled)
     val thumbRadius by dimensions.thumbRadius()
     val trackHeight by dimensions.trackHeight()
-    var startPx: Float
+    var startPx: Float by remember { mutableStateOf(0f) }
+    var pressOffset: Float by remember { mutableStateOf(0f) }
     var endPx: Float
-    Canvas(modifier = modifier) {
-        startPx = 0f + thumbRadius.toPx()
+
+    val draggableState = rememberDraggableState {
+        startPx += it + pressOffset
+        pressOffset = 0f
+    }
+
+    val scope = rememberCoroutineScope()
+    Text(text = pressOffset.toString())
+    Canvas(
+        modifier = modifier
+            .draggable(draggableState, orientation = Orientation.Horizontal)
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onPress = { pos ->
+                        val to = pos.x
+                        pressOffset = to - startPx
+                    },
+                    onTap = {
+                        scope.launch {
+                            draggableState.drag(MutatePriority.UserInput) {
+                                dragBy(0f)
+                            }
+                        }
+                    }
+                )
+            }
+    ) {
+        //startPx = 0f + thumbRadius.toPx()
         endPx = size.width - thumbRadius.toPx()
+
         if (segments.isEmpty()) {
-            drawLine(
-                start = Offset(startPx, center.y),
-                end = Offset(endPx, center.y),
-                color = trackColor.value,
-                strokeWidth = trackHeight.toPx()
+            drawSegment(
+                startPx = startPx,
+                endPx = endPx,
+                trackColor = trackColor,
+                trackHeight = trackHeight.toPx()
             )
+        } else {
+
         }
     }
+}
+
+fun DrawScope.drawSegment(
+    startPx: Float,
+    endPx: Float,
+    trackColor: Color,
+    trackHeight: Float
+) {
+    drawLine(
+        start = Offset(startPx, center.y),
+        end = Offset(endPx, center.y),
+        color = trackColor,
+        strokeWidth = trackHeight
+    )
 }
 
 @Preview(showBackground = true)
@@ -86,7 +146,7 @@ fun Track(
 fun SeekerPreview() {
     Seeker(
         value = 0f,
-        onValueChange = {  },
+        onValueChange = { },
         modifier = Modifier.fillMaxWidth()
     )
 }
