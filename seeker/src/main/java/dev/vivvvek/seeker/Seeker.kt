@@ -72,7 +72,10 @@ fun Seeker(
             widthPx = endPx - startPx.toPx()
         }
 
-        Box(modifier = Modifier.defaultSeekerDimensions(dimensions)) {
+        Box(
+            modifier = modifier.defaultSeekerDimensions(dimensions),
+            contentAlignment = Alignment.CenterStart
+        ) {
             Track(
                 modifier = Modifier.fillMaxSize(),
                 enabled = enabled,
@@ -156,11 +159,13 @@ fun DrawScope.drawSegment(
 
 private fun Modifier.defaultSeekerDimensions(dimensions: SeekerDimensions) = composed {
     with(dimensions) {
-        Modifier.heightIn(
-            max = thumbRadius().value.coerceAtLeast(SeekerDefaults.MinSliderHeight)
-        ).widthIn(
-            min = SeekerDefaults.MinSliderWidth
-        )
+        Modifier
+            .heightIn(
+                max = thumbRadius().value.coerceAtLeast(SeekerDefaults.MinSliderHeight)
+            )
+            .widthIn(
+                min = SeekerDefaults.MinSliderWidth
+            )
     }
 }
 
