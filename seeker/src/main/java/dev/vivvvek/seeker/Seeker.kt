@@ -16,32 +16,30 @@
 package dev.vivvvek.seeker
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.MutatePriority
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.gestures.draggable
-import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
-import kotlinx.coroutines.launch
+import androidx.compose.ui.unit.IntOffset
 
 @Composable
 fun Seeker(
@@ -83,6 +81,16 @@ fun Seeker(
                 colors = colors,
                 dimensions = dimensions
             )
+            val progressPx = progressPx(range, widthPx, progress)
+            Spacer(
+                modifier = Modifier
+                    .offset {
+                        IntOffset(x = progressPx.toInt(), 0)
+                    }
+                    .size(dimensions.thumbRadius().value)
+                    .clip(CircleShape)
+                    .background(colors.thumbColor(enabled = enabled).value)
+            )
         }
     }
 }
@@ -98,36 +106,14 @@ private fun Track(
     val trackColor by colors.trackColor(enabled)
     val thumbRadius by dimensions.thumbRadius()
     val trackHeight by dimensions.trackHeight()
-    var startPx: Float by remember { mutableStateOf(0f) }
-    var pressOffset: Float by remember { mutableStateOf(0f) }
+
     var endPx: Float
+    var startPx: Float
 
-    val draggableState = rememberDraggableState {
-        startPx += it + pressOffset
-        pressOffset = 0f
-    }
-
-    val scope = rememberCoroutineScope()
     Canvas(
         modifier = modifier
-            .draggable(draggableState, orientation = Orientation.Horizontal)
-            .pointerInput(Unit) {
-                detectTapGestures(
-                    onPress = { pos ->
-                        val to = pos.x
-                        pressOffset = to - startPx
-                    },
-                    onTap = {
-                        scope.launch {
-                            draggableState.drag(MutatePriority.UserInput) {
-                                dragBy(0f)
-                            }
-                        }
-                    }
-                )
-            }
     ) {
-        //startPx = 0f + thumbRadius.toPx()
+        startPx = thumbRadius.toPx()
         endPx = size.width - thumbRadius.toPx()
 
         if (segments.isEmpty()) {
@@ -169,11 +155,17 @@ private fun Modifier.defaultSeekerDimensions(dimensions: SeekerDimensions) = com
     }
 }
 
+fun progressPx(range: ClosedFloatingPointRange<Float>, widthPx: Float, progress: Float) : Float {
+    val rangeSIze = range.endInclusive - range.start
+    val progressPercent = (progress - range.start) * 100 / rangeSIze
+    return (progressPercent * widthPx / 100)
+}
+
 @Preview(showBackground = true)
 @Composable
 fun SeekerPreview() {
     Seeker(
-        progress = 0f,
+        progress = 1f,
         onProgressChange = { },
     )
 }
