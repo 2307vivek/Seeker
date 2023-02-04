@@ -71,6 +71,11 @@ object SeekerDefaults {
 
     internal val MinSliderHeight = 48.dp
     internal val MinSliderWidth = ThumbRadius * 2
+
+    internal val ThumbDefaultElevation = 1.dp
+    internal val ThumbPressedElevation = 6.dp
+
+    internal val ThumbRippleRadius = 24.dp
 }
 
 @Stable
