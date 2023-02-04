@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun Seeker(
+    modifier: Modifier = Modifier,
     progress: Float,
     range: ClosedFloatingPointRange<Float> = 0f..1f,
     onProgressChange: (Float) -> Unit,
@@ -62,7 +63,6 @@ fun Seeker(
     colors: SeekerColors = SeekerDefaults.seekerColors(),
     dimensions: SeekerDimensions = SeekerDefaults.seekerDimensions(),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    modifier: Modifier = Modifier
 ) {
     segments.forEach {
         require(it.start in range) {
