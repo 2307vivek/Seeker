@@ -17,6 +17,7 @@ package dev.vivvvek.seeker
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.DragInteraction
@@ -29,6 +30,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.requiredSizeIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
@@ -71,7 +74,14 @@ fun Seeker(
         }
     }
 
-    BoxWithConstraints {
+    BoxWithConstraints(
+        modifier = modifier
+            .requiredSizeIn(
+                minHeight = SeekerDefaults.ThumbRippleRadius * 2,
+                minWidth = SeekerDefaults.ThumbRippleRadius * 2
+            )
+            .focusable(enabled, interactionSource)
+    ) {
         val thumbRadius by dimensions.thumbRadius()
         val startPx = thumbRadius
         val endPx = constraints.maxWidth.toFloat()
@@ -82,7 +92,7 @@ fun Seeker(
         }
         val progressPx = progressPx(range, widthPx, progress)
         Seeker(
-            modifier = modifier,
+            modifier = Modifier,
             widthPx = widthPx,
             progressPx = progressPx,
             enabled = enabled,
