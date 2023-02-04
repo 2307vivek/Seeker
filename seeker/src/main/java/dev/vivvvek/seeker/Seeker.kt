@@ -161,7 +161,7 @@ private fun Track(
     }
 }
 
-fun DrawScope.drawSegment(
+private fun DrawScope.drawSegment(
     startPx: Float,
     endPx: Float,
     trackColor: Color,
