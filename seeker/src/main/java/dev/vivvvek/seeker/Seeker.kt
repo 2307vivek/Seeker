@@ -69,31 +69,50 @@ fun Seeker(
         with(LocalDensity.current) {
             widthPx = endPx - (startPx.toPx() * 2)
         }
+        val progressPx = progressPx(range, widthPx, progress)
+        Seeker(
+            modifier = modifier,
+            widthPx = widthPx,
+            progressPx = progressPx,
+            enabled = enabled,
+            segments = segments,
+            colors = colors,
+            dimensions = dimensions
+        )
+    }
+}
 
-        Box(
-            modifier = modifier.defaultSeekerDimensions(dimensions),
-            contentAlignment = Alignment.CenterStart
-        ) {
-            val progressPx = progressPx(range, widthPx, progress)
-            Track(
-                modifier = Modifier.fillMaxSize(),
-                enabled = enabled,
-                segments = segments,
-                colors = colors,
-                widthPx = widthPx,
-                progressPx = progressPx,
-                dimensions = dimensions
-            )
-            Spacer(
-                modifier = Modifier
-                    .offset {
-                        IntOffset(x = progressPx.toInt(), 0)
-                    }
-                    .size(dimensions.thumbRadius().value * 2)
-                    .clip(CircleShape)
-                    .background(colors.thumbColor(enabled = enabled).value)
-            )
-        }
+@Composable
+private fun Seeker(
+    modifier: Modifier,
+    widthPx: Float,
+    progressPx: Float,
+    enabled: Boolean,
+    segments: List<Segment>,
+    colors: SeekerColors,
+    dimensions: SeekerDimensions,
+) {
+    Box(
+        modifier = modifier.defaultSeekerDimensions(dimensions),
+        contentAlignment = Alignment.CenterStart
+    ) {
+        Track(
+            modifier = Modifier.fillMaxSize(),
+            enabled = enabled,
+            segments = segments,
+            colors = colors,
+            widthPx = widthPx,
+            dimensions = dimensions
+        )
+        Spacer(
+            modifier = Modifier
+                .offset {
+                    IntOffset(x = progressPx.toInt(), 0)
+                }
+                .size(dimensions.thumbRadius().value * 2)
+                .clip(CircleShape)
+                .background(colors.thumbColor(enabled = enabled).value)
+        )
     }
 }
 
@@ -104,7 +123,6 @@ private fun Track(
     segments: List<Segment>,
     colors: SeekerColors,
     widthPx: Float,
-    progressPx: Float,
     dimensions: SeekerDimensions
 ) {
     val trackColor by colors.trackColor(enabled)
