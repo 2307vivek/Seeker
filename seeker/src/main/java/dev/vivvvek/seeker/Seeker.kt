@@ -147,7 +147,7 @@ private fun Modifier.defaultSeekerDimensions(dimensions: SeekerDimensions) = com
     with(dimensions) {
         Modifier
             .heightIn(
-                max = thumbRadius().value.coerceAtLeast(SeekerDefaults.MinSliderHeight)
+                max = (thumbRadius().value * 2).coerceAtLeast(SeekerDefaults.MinSliderHeight)
             )
             .widthIn(
                 min = SeekerDefaults.MinSliderWidth
