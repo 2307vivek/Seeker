@@ -17,6 +17,7 @@ package dev.vivvvek.seeker
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -36,10 +37,12 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun Seeker(
@@ -67,27 +70,29 @@ fun Seeker(
         val widthPx: Float
 
         with(LocalDensity.current) {
-            widthPx = endPx - startPx.toPx()
+            widthPx = endPx - (startPx.toPx() * 2)
         }
 
         Box(
             modifier = modifier.defaultSeekerDimensions(dimensions),
             contentAlignment = Alignment.CenterStart
         ) {
+            val progressPx = progressPx(range, widthPx, progress)
             Track(
                 modifier = Modifier.fillMaxSize(),
                 enabled = enabled,
                 segments = segments,
                 colors = colors,
+                widthPx = widthPx,
+                progressPx = progressPx,
                 dimensions = dimensions
             )
-            val progressPx = progressPx(range, widthPx, progress)
             Spacer(
                 modifier = Modifier
                     .offset {
                         IntOffset(x = progressPx.toInt(), 0)
                     }
-                    .size(dimensions.thumbRadius().value)
+                    .size(dimensions.thumbRadius().value * 2)
                     .clip(CircleShape)
                     .background(colors.thumbColor(enabled = enabled).value)
             )
@@ -101,9 +106,12 @@ private fun Track(
     enabled: Boolean,
     segments: List<Segment>,
     colors: SeekerColors,
+    widthPx: Float,
+    progressPx: Float,
     dimensions: SeekerDimensions
 ) {
     val trackColor by colors.trackColor(enabled)
+    val progressColor by colors.progressColor(enabled)
     val thumbRadius by dimensions.thumbRadius()
     val trackHeight by dimensions.trackHeight()
 
@@ -114,7 +122,7 @@ private fun Track(
         modifier = modifier
     ) {
         startPx = thumbRadius.toPx()
-        endPx = size.width - thumbRadius.toPx()
+        endPx = startPx + widthPx
 
         if (segments.isEmpty()) {
             drawSegment(
@@ -170,7 +178,7 @@ private fun progressPx(
 @Composable
 fun SeekerPreview() {
     Seeker(
-        progress = 1f,
+        progress = 0f,
         onProgressChange = { },
     )
 }
