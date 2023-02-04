@@ -104,16 +104,31 @@ private fun Seeker(
             widthPx = widthPx,
             dimensions = dimensions
         )
-        Spacer(
-            modifier = Modifier
-                .offset {
-                    IntOffset(x = progressPx.toInt(), 0)
-                }
-                .size(dimensions.thumbRadius().value * 2)
-                .clip(CircleShape)
-                .background(colors.thumbColor(enabled = enabled).value)
+        Thumb(
+            progressPx = progressPx,
+            dimensions = dimensions,
+            colors = colors,
+            enabled = enabled
         )
     }
+}
+
+@Composable
+private fun Thumb(
+    progressPx: Float,
+    dimensions: SeekerDimensions,
+    colors: SeekerColors,
+    enabled: Boolean
+) {
+    Spacer(
+        modifier = Modifier
+            .offset {
+                IntOffset(x = progressPx.toInt(), 0)
+            }
+            .size(dimensions.thumbRadius().value * 2)
+            .clip(CircleShape)
+            .background(colors.thumbColor(enabled = enabled).value)
+    )
 }
 
 @Composable
