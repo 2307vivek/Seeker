@@ -44,6 +44,7 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.platform.LocalDensity
@@ -114,6 +115,7 @@ private fun Seeker(
             segments = segments,
             colors = colors,
             widthPx = widthPx,
+            progressPx = progressPx,
             dimensions = dimensions
         )
         Thumb(
@@ -133,6 +135,7 @@ private fun Track(
     segments: List<Segment>,
     colors: SeekerColors,
     widthPx: Float,
+    progressPx: Float,
     dimensions: SeekerDimensions
 ) {
     val trackColor by colors.trackColor(enabled)
@@ -158,6 +161,14 @@ private fun Track(
             )
         } else {
         }
+
+        drawLine(
+            start = Offset(startPx, center.y),
+            end = Offset(startPx + progressPx, center.y),
+            color = progressColor,
+            strokeWidth = trackHeight.toPx(),
+            blendMode = BlendMode.SrcIn
+        )
     }
 }
 
@@ -210,7 +221,10 @@ private fun Thumb(
             }
             .indication(
                 interactionSource = interactionSource,
-                indication = rememberRipple(bounded = false, radius = SeekerDefaults.ThumbRippleRadius)
+                indication = rememberRipple(
+                    bounded = false,
+                    radius = SeekerDefaults.ThumbRippleRadius
+                )
             )
             .hoverable(interactionSource)
             .size(dimensions.thumbRadius().value * 2)
@@ -247,7 +261,7 @@ private fun progressPx(
 @Composable
 fun SeekerPreview() {
     Seeker(
-        progress = 0f,
+        progress = 0.4f,
         onProgressChange = { },
     )
 }
