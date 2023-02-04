@@ -127,51 +127,6 @@ private fun Seeker(
 }
 
 @Composable
-private fun Thumb(
-    progressPx: Float,
-    dimensions: SeekerDimensions,
-    colors: SeekerColors,
-    enabled: Boolean,
-    interactionSource: MutableInteractionSource
-) {
-    val interactions = remember { mutableStateListOf<Interaction>() }
-    LaunchedEffect(interactionSource) {
-        interactionSource.interactions.collect { interaction ->
-            when (interaction) {
-                is PressInteraction.Press -> interactions.add(interaction)
-                is PressInteraction.Release -> interactions.remove(interaction.press)
-                is PressInteraction.Cancel -> interactions.remove(interaction.press)
-                is DragInteraction.Start -> interactions.add(interaction)
-                is DragInteraction.Stop -> interactions.remove(interaction.start)
-                is DragInteraction.Cancel -> interactions.remove(interaction.start)
-            }
-        }
-    }
-
-    val elevation = if (interactions.isEmpty()) {
-        SeekerDefaults.ThumbDefaultElevation
-    } else {
-        SeekerDefaults.ThumbPressedElevation
-    }
-
-    Spacer(
-        modifier = Modifier
-            .offset {
-                IntOffset(x = progressPx.toInt(), 0)
-            }
-            .indication(
-                interactionSource = interactionSource,
-                indication = rememberRipple(bounded = false, radius = SeekerDefaults.ThumbRippleRadius)
-            )
-            .hoverable(interactionSource)
-            .size(dimensions.thumbRadius().value * 2)
-            .clip(CircleShape)
-            .shadow(if (enabled) elevation else 0.dp, shape = CircleShape)
-            .background(colors.thumbColor(enabled = enabled).value)
-    )
-}
-
-@Composable
 private fun Track(
     modifier: Modifier,
     enabled: Boolean,
@@ -217,6 +172,51 @@ fun DrawScope.drawSegment(
         end = Offset(endPx, center.y),
         color = trackColor,
         strokeWidth = trackHeight
+    )
+}
+
+@Composable
+private fun Thumb(
+    progressPx: Float,
+    dimensions: SeekerDimensions,
+    colors: SeekerColors,
+    enabled: Boolean,
+    interactionSource: MutableInteractionSource
+) {
+    val interactions = remember { mutableStateListOf<Interaction>() }
+    LaunchedEffect(interactionSource) {
+        interactionSource.interactions.collect { interaction ->
+            when (interaction) {
+                is PressInteraction.Press -> interactions.add(interaction)
+                is PressInteraction.Release -> interactions.remove(interaction.press)
+                is PressInteraction.Cancel -> interactions.remove(interaction.press)
+                is DragInteraction.Start -> interactions.add(interaction)
+                is DragInteraction.Stop -> interactions.remove(interaction.start)
+                is DragInteraction.Cancel -> interactions.remove(interaction.start)
+            }
+        }
+    }
+
+    val elevation = if (interactions.isEmpty()) {
+        SeekerDefaults.ThumbDefaultElevation
+    } else {
+        SeekerDefaults.ThumbPressedElevation
+    }
+
+    Spacer(
+        modifier = Modifier
+            .offset {
+                IntOffset(x = progressPx.toInt(), 0)
+            }
+            .indication(
+                interactionSource = interactionSource,
+                indication = rememberRipple(bounded = false, radius = SeekerDefaults.ThumbRippleRadius)
+            )
+            .hoverable(interactionSource)
+            .size(dimensions.thumbRadius().value * 2)
+            .clip(CircleShape)
+            .shadow(if (enabled) elevation else 0.dp, shape = CircleShape)
+            .background(colors.thumbColor(enabled = enabled).value)
     )
 }
 
