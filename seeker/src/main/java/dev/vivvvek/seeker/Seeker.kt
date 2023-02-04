@@ -155,9 +155,14 @@ private fun Modifier.defaultSeekerDimensions(dimensions: SeekerDimensions) = com
     }
 }
 
-fun progressPx(range: ClosedFloatingPointRange<Float>, widthPx: Float, progress: Float) : Float {
+private fun progressPx(
+    range: ClosedFloatingPointRange<Float>,
+    widthPx: Float,
+    progress: Float
+): Float {
     val rangeSIze = range.endInclusive - range.start
-    val progressPercent = (progress - range.start) * 100 / rangeSIze
+    val p = progress.coerceIn(range.start, range.endInclusive)
+    val progressPercent = (p - range.start) * 100 / rangeSIze
     return (progressPercent * widthPx / 100)
 }
 
