@@ -53,7 +53,7 @@ object SeekerDefaults {
         progressHeight: Dp = ProgressHeight,
         thumbRadius: Dp = ThumbRadius,
         gap: Dp = Gap
-    ) : SeekerDimensions = DefaultSeekerDimensions(
+    ): SeekerDimensions = DefaultSeekerDimensions(
         trackHeight = trackHeight,
         progressHeight = progressHeight,
         thumbRadius = thumbRadius,
@@ -92,16 +92,16 @@ interface SeekerColors {
 @Stable
 interface SeekerDimensions {
     @Composable
-    fun trackHeight() : State<Dp>
+    fun trackHeight(): State<Dp>
 
     @Composable
-    fun progressHeight() : State<Dp>
+    fun progressHeight(): State<Dp>
 
     @Composable
-    fun gap() : State<Dp>
+    fun gap(): State<Dp>
 
     @Composable
-    fun thumbRadius() : State<Dp>
+    fun thumbRadius(): State<Dp>
 }
 
 @Immutable

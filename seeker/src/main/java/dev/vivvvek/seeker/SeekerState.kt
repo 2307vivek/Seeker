@@ -22,9 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 
 @Stable
-class SeekerState {
-
-}
+class SeekerState
 
 @Composable
 fun rememberSeekerState(): SeekerState = remember {
