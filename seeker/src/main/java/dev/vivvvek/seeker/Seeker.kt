@@ -121,20 +121,20 @@ fun Seeker(
 
         val drag = Modifier.pointerInput(widthPx, endPx, isRtl, thumbRadius, interactionSource) {
             detectDragGestures(
-            onDrag = { change, dragAmount ->
-                if (enabled) {
-                    val positionX =
-                        if (!isRtl) change.position.x - trackStart
-                        else
-                            (endPx - change.position.x) - trackStart
+                onDrag = { change, _ ->
+                    if (enabled) {
+                        val positionX =
+                            if (!isRtl) change.position.x - trackStart
+                            else
+                                (endPx - change.position.x) - trackStart
 
-                    onValueChangeState(pxToValue(range, widthPx, positionX))
+                        onValueChangeState(pxToValue(range, widthPx, positionX))
+                    }
+                },
+                onDragEnd = {
+                    onValueChangeFinished?.invoke()
                 }
-            },
-            onDragEnd = {
-                onValueChangeFinished?.invoke()
-            }
-        )
+            )
         }
 
         Seeker(
@@ -314,7 +314,7 @@ private fun valuePx(
     return (progressPercent * widthPx / 100)
 }
 
-//returns the corresponding progress value for a pixel in slider
+// returns the corresponding progress value for a pixel in slider
 private fun pxToValue(
     range: ClosedFloatingPointRange<Float>,
     widthPx: Float,
