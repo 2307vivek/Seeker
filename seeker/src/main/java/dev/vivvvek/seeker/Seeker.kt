@@ -18,6 +18,7 @@ package dev.vivvvek.seeker
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.indication
@@ -103,22 +104,41 @@ fun Seeker(
         }
         val valuePx = valuePx(range, widthPx, value)
 
-        val gestures =
+        val press =
             Modifier.pointerInput(widthPx, endPx, isRtl, thumbRadius, interactionSource) {
                 detectTapGestures(
                     onPress = { position ->
                         if (enabled) {
-                            val positionX = if (!isRtl) position.x - trackStart else (endPx - position.x) - trackStart
+                            val positionX =
+                                if (!isRtl) position.x - trackStart else (endPx - position.x) - trackStart
 
-                            onValueChangeState(pxToValue(range, widthPx, positionX, trackStart, trackEnd))
+                            onValueChangeState(pxToValue(range, widthPx, positionX))
                             onValueChangeFinished?.invoke()
                         }
                     }
                 )
             }
 
+        val drag = Modifier.pointerInput(widthPx, endPx, isRtl, thumbRadius, interactionSource) {
+            detectDragGestures(
+            onDrag = { change, dragAmount ->
+                if (enabled) {
+                    val positionX =
+                        if (!isRtl) change.position.x - trackStart
+                        else
+                            (endPx - change.position.x) - trackStart
+
+                    onValueChangeState(pxToValue(range, widthPx, positionX))
+                }
+            },
+            onDragEnd = {
+                onValueChangeFinished?.invoke()
+            }
+        )
+        }
+
         Seeker(
-            modifier = modifier.then(gestures),
+            modifier = modifier.then(press).then(drag),
             widthPx = widthPx,
             valuePx = valuePx,
             enabled = enabled,
@@ -294,17 +314,15 @@ private fun valuePx(
     return (progressPercent * widthPx / 100)
 }
 
+//returns the corresponding progress value for a pixel in slider
 private fun pxToValue(
     range: ClosedFloatingPointRange<Float>,
     widthPx: Float,
     pixel: Float,
-    startPx: Float,
-    endPx: Float
 ): Float {
     val rangeSize = range.endInclusive - range.start
-    val px = pixel.coerceIn(startPx, endPx)
-    val percent = px * 100 / widthPx
-    return percent * rangeSize / 100
+    val percent = pixel * 100 / widthPx
+    return (percent * rangeSize / 100).coerceIn(range.start, range.endInclusive)
 }
 
 @Preview(showBackground = true)
