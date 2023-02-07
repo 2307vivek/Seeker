@@ -62,10 +62,10 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun Seeker(
     modifier: Modifier = Modifier,
-    progress: Float,
+    value: Float,
     range: ClosedFloatingPointRange<Float> = 0f..1f,
-    onProgressChange: (Float) -> Unit,
-    onProgressChangeFinished: (() -> Unit)? = null,
+    onValueChange: (Float) -> Unit,
+    onValueChangeFinished: (() -> Unit)? = null,
     segments: List<Segment> = emptyList(),
     enabled: Boolean = true,
     colors: SeekerColors = SeekerDefaults.seekerColors(),
@@ -78,7 +78,7 @@ fun Seeker(
         }
     }
 
-    val onProgressChangeState by rememberUpdatedState(onProgressChange)
+    val onValueChangeState by rememberUpdatedState(onValueChange)
 
     BoxWithConstraints(
         modifier = modifier
@@ -101,7 +101,7 @@ fun Seeker(
             widthPx = endPx - (trackStart * 2)
             trackEnd = trackStart + widthPx
         }
-        val progressPx = progressPx(range, widthPx, progress)
+        val valuePx = valuePx(range, widthPx, value)
 
         val gestures =
             Modifier.pointerInput(widthPx, endPx, isRtl, thumbRadius, interactionSource) {
@@ -110,8 +110,8 @@ fun Seeker(
                         if (enabled) {
                             val positionX = if (!isRtl) position.x - trackStart else (endPx - position.x) - trackStart
 
-                            onProgressChangeState(pxToProgress(range, widthPx, positionX, trackStart, trackEnd))
-                            onProgressChangeFinished?.invoke()
+                            onValueChangeState(pxToValue(range, widthPx, positionX, trackStart, trackEnd))
+                            onValueChangeFinished?.invoke()
                         }
                     }
                 )
@@ -120,7 +120,7 @@ fun Seeker(
         Seeker(
             modifier = modifier.then(gestures),
             widthPx = widthPx,
-            progressPx = progressPx,
+            valuePx = valuePx,
             enabled = enabled,
             segments = segments,
             colors = colors,
@@ -134,7 +134,7 @@ fun Seeker(
 private fun Seeker(
     modifier: Modifier,
     widthPx: Float,
-    progressPx: Float,
+    valuePx: Float,
     enabled: Boolean,
     segments: List<Segment>,
     colors: SeekerColors,
@@ -151,11 +151,11 @@ private fun Seeker(
             segments = segments,
             colors = colors,
             widthPx = widthPx,
-            progressPx = progressPx,
+            valuePx = valuePx,
             dimensions = dimensions
         )
         Thumb(
-            progressPx = progressPx,
+            valuePx = valuePx,
             dimensions = dimensions,
             colors = colors,
             enabled = enabled,
@@ -171,7 +171,7 @@ private fun Track(
     segments: List<Segment>,
     colors: SeekerColors,
     widthPx: Float,
-    progressPx: Float,
+    valuePx: Float,
     dimensions: SeekerDimensions
 ) {
     val trackColor by colors.trackColor(enabled)
@@ -200,7 +200,7 @@ private fun Track(
 
         drawLine(
             start = Offset(startPx, center.y),
-            end = Offset(startPx + progressPx, center.y),
+            end = Offset(startPx + valuePx, center.y),
             color = progressColor,
             strokeWidth = trackHeight.toPx(),
             blendMode = BlendMode.SrcIn
@@ -224,7 +224,7 @@ private fun DrawScope.drawSegment(
 
 @Composable
 private fun Thumb(
-    progressPx: Float,
+    valuePx: Float,
     dimensions: SeekerDimensions,
     colors: SeekerColors,
     enabled: Boolean,
@@ -253,7 +253,7 @@ private fun Thumb(
     Spacer(
         modifier = Modifier
             .offset {
-                IntOffset(x = progressPx.toInt(), 0)
+                IntOffset(x = valuePx.toInt(), 0)
             }
             .indication(
                 interactionSource = interactionSource,
@@ -283,7 +283,7 @@ private fun Modifier.defaultSeekerDimensions(dimensions: SeekerDimensions) = com
 }
 
 // returns the corresponding pixel value of progress in the the slider.
-private fun progressPx(
+private fun valuePx(
     range: ClosedFloatingPointRange<Float>,
     widthPx: Float,
     progress: Float
@@ -294,7 +294,7 @@ private fun progressPx(
     return (progressPercent * widthPx / 100)
 }
 
-private fun pxToProgress(
+private fun pxToValue(
     range: ClosedFloatingPointRange<Float>,
     widthPx: Float,
     pixel: Float,
@@ -311,7 +311,7 @@ private fun pxToProgress(
 @Composable
 fun SeekerPreview() {
     Seeker(
-        progress = 0.4f,
-        onProgressChange = { },
+        value = 0.4f,
+        onValueChange = { },
     )
 }
