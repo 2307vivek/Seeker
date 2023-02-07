@@ -323,7 +323,7 @@ private fun pxToValue(
 ): Float {
     val rangeSize = range.endInclusive - range.start
     val percent = position * 100 / widthPx
-    return (percent * rangeSize / 100).coerceIn(range.start, range.endInclusive)
+    return ((percent * (rangeSize) / 100) + range.start).coerceIn(range.start, range.endInclusive)
 }
 
 @Preview(showBackground = true)
