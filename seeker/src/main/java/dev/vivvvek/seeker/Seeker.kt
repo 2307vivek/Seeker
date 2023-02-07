@@ -89,27 +89,33 @@ fun Seeker(
             .focusable(enabled, interactionSource)
     ) {
         val thumbRadius by dimensions.thumbRadius()
-        val startPx = thumbRadius
+        val trackStart: Float
         val endPx = constraints.maxWidth.toFloat()
         val widthPx: Float
+        val trackEnd: Float
 
         val isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
 
         with(LocalDensity.current) {
-            widthPx = endPx - (startPx.toPx() * 2)
+            trackStart = thumbRadius.toPx()
+            widthPx = endPx - (trackStart * 2)
+            trackEnd = trackStart + widthPx
         }
         val progressPx = progressPx(range, widthPx, progress)
 
-        val gestures = Modifier.pointerInput(widthPx, endPx, isRtl, thumbRadius, interactionSource) {
-            detectTapGestures(
-                onPress = { position ->
-                    if (enabled) {
-                        val positionX = position.x - (thumbRadius.toPx() * 2)
-                        onProgressChangeState(pxToProgress(range, widthPx, positionX))
+        val gestures =
+            Modifier.pointerInput(widthPx, endPx, isRtl, thumbRadius, interactionSource) {
+                detectTapGestures(
+                    onPress = { position ->
+                        if (enabled) {
+                            val positionX = if (!isRtl) position.x - trackStart else (endPx - position.x) - trackStart
+
+                            onProgressChangeState(pxToProgress(range, widthPx, positionX, trackStart, trackEnd))
+                            onProgressChangeFinished?.invoke()
+                        }
                     }
-                }
-            )
-        }
+                )
+            }
 
         Seeker(
             modifier = modifier.then(gestures),
@@ -291,9 +297,12 @@ private fun progressPx(
 private fun pxToProgress(
     range: ClosedFloatingPointRange<Float>,
     widthPx: Float,
-    px: Float
+    pixel: Float,
+    startPx: Float,
+    endPx: Float
 ): Float {
     val rangeSize = range.endInclusive - range.start
+    val px = pixel.coerceIn(startPx, endPx)
     val percent = px * 100 / widthPx
     return percent * rangeSize / 100
 }
