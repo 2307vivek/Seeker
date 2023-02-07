@@ -102,7 +102,7 @@ fun Seeker(
             widthPx = endPx - (trackStart * 2)
             trackEnd = trackStart + widthPx
         }
-        val valuePx = valuePx(range, widthPx, value)
+        val valuePx = valuePx(value, widthPx, range)
 
         val press =
             Modifier.pointerInput(widthPx, endPx, isRtl, thumbRadius, interactionSource) {
@@ -112,7 +112,7 @@ fun Seeker(
                             val positionX =
                                 if (!isRtl) position.x - trackStart else (endPx - position.x) - trackStart
 
-                            onValueChangeState(pxToValue(range, widthPx, positionX))
+                            onValueChangeState(pxToValue(positionX, widthPx, range))
                             onValueChangeFinished?.invoke()
                         }
                     }
@@ -129,7 +129,7 @@ fun Seeker(
                                 else
                                     (endPx - change.position.x) - trackStart
 
-                            onValueChangeState(pxToValue(range, widthPx, positionX))
+                            onValueChangeState(pxToValue(positionX, widthPx, range))
                         }
                     },
                     onDragEnd = {
@@ -303,11 +303,11 @@ private fun Modifier.defaultSeekerDimensions(dimensions: SeekerDimensions) = com
     }
 }
 
-// returns the corresponding pixel value of progress in the the slider.
+// returns the corresponding position in pixels of progress in the the slider.
 private fun valuePx(
-    range: ClosedFloatingPointRange<Float>,
+    progress: Float,
     widthPx: Float,
-    progress: Float
+    range: ClosedFloatingPointRange<Float>
 ): Float {
     val rangeSIze = range.endInclusive - range.start
     val p = progress.coerceIn(range.start, range.endInclusive)
@@ -315,14 +315,14 @@ private fun valuePx(
     return (progressPercent * widthPx / 100)
 }
 
-// returns the corresponding progress value for a pixel in slider
+// returns the corresponding progress value for a position in slider
 private fun pxToValue(
-    range: ClosedFloatingPointRange<Float>,
+    position: Float,
     widthPx: Float,
-    pixel: Float,
+    range: ClosedFloatingPointRange<Float>
 ): Float {
     val rangeSize = range.endInclusive - range.start
-    val percent = pixel * 100 / widthPx
+    val percent = position * 100 / widthPx
     return (percent * rangeSize / 100).coerceIn(range.start, range.endInclusive)
 }
 
@@ -330,7 +330,8 @@ private fun pxToValue(
 @Composable
 fun SeekerPreview() {
     Seeker(
-        value = 0.4f,
+        value = 60f,
+        range = 20f..100f,
         onValueChange = { },
     )
 }
