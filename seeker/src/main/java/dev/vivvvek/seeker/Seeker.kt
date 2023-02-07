@@ -18,6 +18,7 @@ package dev.vivvvek.seeker
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.DragInteraction
@@ -40,6 +41,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -49,9 +51,12 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -73,6 +78,8 @@ fun Seeker(
         }
     }
 
+    val onProgressChangeState by rememberUpdatedState(onProgressChange)
+
     BoxWithConstraints(
         modifier = modifier
             .requiredSizeIn(
@@ -86,12 +93,26 @@ fun Seeker(
         val endPx = constraints.maxWidth.toFloat()
         val widthPx: Float
 
+        val isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
+
         with(LocalDensity.current) {
             widthPx = endPx - (startPx.toPx() * 2)
         }
         val progressPx = progressPx(range, widthPx, progress)
+
+        val gestures = Modifier.pointerInput(widthPx, endPx, isRtl, thumbRadius, interactionSource) {
+            detectTapGestures(
+                onPress = { position ->
+                    if (enabled) {
+                        val positionX = position.x - (thumbRadius.toPx() * 2)
+                        onProgressChangeState(pxToProgress(range, widthPx, positionX))
+                    }
+                }
+            )
+        }
+
         Seeker(
-            modifier = Modifier,
+            modifier = modifier.then(gestures),
             widthPx = widthPx,
             progressPx = progressPx,
             enabled = enabled,
@@ -255,6 +276,7 @@ private fun Modifier.defaultSeekerDimensions(dimensions: SeekerDimensions) = com
     }
 }
 
+// returns the corresponding pixel value of progress in the the slider.
 private fun progressPx(
     range: ClosedFloatingPointRange<Float>,
     widthPx: Float,
@@ -264,6 +286,16 @@ private fun progressPx(
     val p = progress.coerceIn(range.start, range.endInclusive)
     val progressPercent = (p - range.start) * 100 / rangeSIze
     return (progressPercent * widthPx / 100)
+}
+
+private fun pxToProgress(
+    range: ClosedFloatingPointRange<Float>,
+    widthPx: Float,
+    px: Float
+): Float {
+    val rangeSize = range.endInclusive - range.start
+    val percent = px * 100 / widthPx
+    return percent * rangeSize / 100
 }
 
 @Preview(showBackground = true)
