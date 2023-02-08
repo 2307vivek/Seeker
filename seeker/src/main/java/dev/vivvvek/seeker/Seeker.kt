@@ -35,6 +35,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.requiredSizeIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.progressSemantics
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
@@ -55,6 +56,9 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.semantics.disabled
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.setProgress
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.LayoutDirection
@@ -87,6 +91,7 @@ fun Seeker(
                 minHeight = SeekerDefaults.ThumbRippleRadius * 2,
                 minWidth = SeekerDefaults.ThumbRippleRadius * 2
             )
+            .progressSemantics(value, range, onValueChange, enabled)
             .focusable(enabled, interactionSource)
     ) {
         val thumbRadius by dimensions.thumbRadius()
@@ -324,6 +329,28 @@ private fun pxToValue(
     val rangeSize = range.endInclusive - range.start
     val percent = position * 100 / widthPx
     return ((percent * (rangeSize) / 100) + range.start).coerceIn(range.start, range.endInclusive)
+}
+
+private fun Modifier.progressSemantics(
+    value: Float,
+    range: ClosedFloatingPointRange<Float>,
+    onValueChange: (Float) -> Unit,
+    enabled: Boolean
+) : Modifier {
+    val coerced = value.coerceIn(range.start, range.endInclusive)
+    return semantics {
+        if (!enabled) disabled()
+        setProgress { targetValue ->
+            val newValue = targetValue.coerceIn(range.start, range.endInclusive)
+
+            if (newValue == coerced) {
+                false
+            } else {
+                onValueChange(newValue)
+                true
+            }
+        }
+    }.progressSemantics(value, range, 0)
 }
 
 @Preview(showBackground = true)
