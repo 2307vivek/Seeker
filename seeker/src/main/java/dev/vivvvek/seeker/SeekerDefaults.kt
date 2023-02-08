@@ -64,7 +64,7 @@ object SeekerDefaults {
     private const val DisabledTrackAlpha = 0.12f
     private const val DisabledProgressAlpha = 0.32f
 
-    private val ThumbRadius = 10.dp
+    internal val ThumbRadius = 10.dp
     private val TrackHeight = 4.dp
     private val ProgressHeight = 4.dp
     private val Gap = 2.dp
