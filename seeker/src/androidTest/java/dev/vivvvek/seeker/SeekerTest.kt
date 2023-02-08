@@ -22,6 +22,7 @@ import androidx.compose.material.Slider
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.SemanticsActions
@@ -249,5 +250,45 @@ class SeekerTest {
 
         rule.onNodeWithTag(tag)
             .assert(SemanticsMatcher.keyIsDefined(SemanticsProperties.Disabled))
+    }
+
+    @Test
+    fun seeker_checkDragInteraction() {
+        val seekerValue = mutableStateOf(0f)
+        val range = 0f..1f
+
+        rule.setContent {
+            Seeker(
+                modifier = Modifier.testTag(tag),
+                value = seekerValue.value,
+                range = range,
+                onValueChange = { seekerValue.value = it }
+            )
+        }
+
+        rule.runOnUiThread {
+            assertEquals(0f, seekerValue.value)
+        }
+
+        var expected = 0f
+
+        rule.onNodeWithTag(tag)
+            .performTouchInput {
+                down(center)
+                moveBy(Offset(100f, 0f))
+                up()
+                expected = calculateFraction(left, right, centerX + 100f)
+            }
+        rule.runOnIdle {
+            assertEquals(expected, seekerValue.value, 0.001f)
+        }
+    }
+
+    private fun calculateFraction(left: Float, right: Float, pos: Float) = with(rule.density) {
+        val offset = SeekerDefaults.ThumbRadius.toPx()
+        val start = left + offset
+        val end = right - offset
+
+        ((pos - start) / (end - start)).coerceIn(0f, 1f)
     }
 }
