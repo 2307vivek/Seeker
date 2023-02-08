@@ -139,7 +139,7 @@ fun Seeker(
             }
 
         Seeker(
-            modifier = modifier.then(press).then(drag),
+            modifier = press.then(drag),
             widthPx = widthPx,
             valuePx = valuePx,
             enabled = enabled,
