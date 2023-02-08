@@ -22,7 +22,6 @@ import androidx.compose.material.Slider
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.SemanticsActions
@@ -278,6 +277,39 @@ class SeekerTest {
                 moveBy(Offset(100f, 0f))
                 up()
                 expected = calculateFraction(left, right, centerX + 100f)
+            }
+        rule.runOnIdle {
+            assertEquals(expected, seekerValue.value, 0.001f)
+        }
+    }
+
+    @Test
+    fun slider_drag_out_of_bounds() {
+        val seekerValue = mutableStateOf(0f)
+
+        rule.setContent {
+            Slider(
+                modifier = Modifier.testTag(tag),
+                value = seekerValue.value,
+                onValueChange = { seekerValue.value = it }
+            )
+        }
+
+        rule.runOnUiThread {
+            assertEquals(0f, seekerValue.value)
+        }
+
+        var expected = 0f
+
+        rule.onNodeWithTag(tag)
+            .performTouchInput {
+                down(center)
+                moveBy(Offset(width.toFloat(), 0f))
+                moveBy(Offset(-width.toFloat(), 0f))
+                moveBy(Offset(-width.toFloat(), 0f))
+                moveBy(Offset(width.toFloat() + 100f, 0f))
+                up()
+                expected = calculateFraction(left, right, centerX + 100)
             }
         rule.runOnIdle {
             assertEquals(expected, seekerValue.value, 0.001f)
