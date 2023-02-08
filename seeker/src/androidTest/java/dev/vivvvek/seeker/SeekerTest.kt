@@ -24,11 +24,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.assertHeightIsEqualTo
 import androidx.compose.ui.test.assertRangeInfoEquals
 import androidx.compose.ui.test.assertWidthIsEqualTo
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -136,6 +138,34 @@ class SeekerTest {
             moveBy(Offset(50f, 50f))
             up()
         }
+
+        rule.runOnIdle {
+            assertEquals(1, callCount.value)
+        }
+    }
+
+    @Test
+    fun seeker_semanticsSetProgress_callsOnValueChangeFinished() {
+        val state = mutableStateOf(0f)
+        val callCount = mutableStateOf(0)
+
+        rule.setContent {
+            Seeker(
+                modifier = Modifier.testTag(tag),
+                value = state.value,
+                onValueChangeFinished = {
+                    callCount.value += 1
+                },
+                onValueChange = { state.value = it }
+            )
+        }
+
+        rule.runOnIdle {
+            assertEquals(0, callCount.value)
+        }
+
+        rule.onNodeWithTag(tag)
+            .performSemanticsAction(SemanticsActions.SetProgress) { it(0.8f) }
 
         rule.runOnIdle {
             assertEquals(1, callCount.value)
