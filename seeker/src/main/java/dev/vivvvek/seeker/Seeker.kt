@@ -107,7 +107,7 @@ fun Seeker(
             widthPx = endPx - (trackStart * 2)
             trackEnd = trackStart + widthPx
         }
-        val valuePx = valuePx(value, widthPx, range)
+        val valuePx = valueToPx(value, widthPx, range)
 
         val press =
             Modifier.pointerInput(widthPx, endPx, isRtl, thumbRadius, interactionSource) {
@@ -309,7 +309,7 @@ private fun Modifier.defaultSeekerDimensions(dimensions: SeekerDimensions) = com
 }
 
 // returns the corresponding position in pixels of progress in the the slider.
-private fun valuePx(
+private fun valueToPx(
     progress: Float,
     widthPx: Float,
     range: ClosedFloatingPointRange<Float>
