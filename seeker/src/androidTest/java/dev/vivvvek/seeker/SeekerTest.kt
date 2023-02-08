@@ -87,7 +87,7 @@ class SeekerTest {
         val callCount = mutableStateOf(0)
 
         rule.setContent {
-            Slider(
+            Seeker(
                 value = seekerValue.value,
                 onValueChange = {
                     seekerValue.value = it
@@ -103,6 +103,37 @@ class SeekerTest {
 
         rule.onNodeWithTag(tag).performTouchInput {
             down(center)
+            up()
+        }
+
+        rule.runOnIdle {
+            assertEquals(1, callCount.value)
+        }
+    }
+
+    @Test
+    fun seeker_valueChangeFinished_calledOnce() {
+        val seekerValue = mutableStateOf(0f)
+        val callCount = mutableStateOf(0)
+
+        rule.setContent {
+            Seeker(
+                modifier = Modifier.testTag(tag),
+                value = seekerValue.value,
+                onValueChangeFinished = {
+                    callCount.value += 1
+                },
+                onValueChange = { seekerValue.value = it }
+            )
+        }
+
+        rule.runOnIdle {
+            assertEquals(0, callCount.value)
+        }
+
+        rule.onNodeWithTag(tag).performTouchInput {
+            down(center)
+            moveBy(Offset(50f, 50f))
             up()
         }
 
