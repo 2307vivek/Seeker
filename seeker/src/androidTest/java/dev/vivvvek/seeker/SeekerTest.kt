@@ -214,23 +214,22 @@ class SeekerTest {
                 value = seekerValue.value,
                 onValueChange = { seekerValue.value = it }
             )
-
-            rule.onNodeWithTag(tag)
-                .assertRangeInfoEquals(ProgressBarRangeInfo(0f, 0f..1f, 0))
-                .assert(SemanticsMatcher.keyIsDefined(SemanticsActions.SetProgress))
-
-            rule.runOnIdle {
-                seekerValue.value = 0.5f
-            }
-
-            rule.onNodeWithTag(tag)
-                .assertRangeInfoEquals(ProgressBarRangeInfo(0.5f, 0f..1f, 0))
-
-            rule.onNodeWithTag(tag).performSemanticsAction(SemanticsActions.SetProgress) { it(0.8f) }
-
-            rule.onNodeWithTag(tag)
-                .assertRangeInfoEquals(ProgressBarRangeInfo(0.8f, 0f..1f, 0))
         }
+        rule.onNodeWithTag(tag)
+            .assertRangeInfoEquals(ProgressBarRangeInfo(0f, 0f..1f, 0))
+            .assert(SemanticsMatcher.keyIsDefined(SemanticsActions.SetProgress))
+
+        rule.runOnIdle {
+            seekerValue.value = 0.5f
+        }
+
+        rule.onNodeWithTag(tag)
+            .assertRangeInfoEquals(ProgressBarRangeInfo(0.5f, 0f..1f, 0))
+
+        rule.onNodeWithTag(tag).performSemanticsAction(SemanticsActions.SetProgress) { it(0.8f) }
+
+        rule.onNodeWithTag(tag)
+            .assertRangeInfoEquals(ProgressBarRangeInfo(0.8f, 0f..1f, 0))
     }
 
     @Test
@@ -337,7 +336,8 @@ class SeekerTest {
                         state = rememberScrollableState { delta ->
                             offset.value += delta
                             delta
-                        })
+                        }
+                    )
             ) {
                 Seeker(
                     modifier = Modifier.testTag(tag),
