@@ -15,13 +15,21 @@
  */
 package dev.vivvvek.seeker
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.requiredSizeIn
+import androidx.compose.material.Slider
+import androidx.compose.material.SliderDefaults
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
+import androidx.compose.ui.test.assertHeightIsEqualTo
 import androidx.compose.ui.test.assertRangeInfoEquals
+import androidx.compose.ui.test.assertWidthIsEqualTo
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Rule
 import org.junit.Test
@@ -33,6 +41,41 @@ class SeekerTest {
 
     @get:Rule
     val rule = createComposeRule()
+
+    @Test
+    fun check_seekerMinSize() {
+        rule.setContent {
+            Box(modifier = Modifier.requiredSize(0.dp)) {
+                Slider(
+                    value = 0f,
+                    onValueChange = {  },
+                    modifier = Modifier.testTag(tag)
+                )
+            }
+        }
+        rule.onNodeWithTag(tag)
+            .assertWidthIsEqualTo(SeekerDefaults.ThumbRadius * 2)
+            .assertHeightIsEqualTo(SeekerDefaults.ThumbRadius * 2)
+    }
+
+    @Test
+    fun check_seekerSizes() {
+        rule.setContent {
+            Box(modifier = Modifier.requiredSizeIn(
+                maxWidth = 100.dp,
+                maxHeight = 100.dp
+            )) {
+                Slider(
+                    value = 0f,
+                    onValueChange = {  },
+                    modifier = Modifier.testTag(tag)
+                )
+            }
+        }
+        rule.onNodeWithTag(tag)
+            .assertWidthIsEqualTo(100.dp)
+            .assertHeightIsEqualTo(SeekerDefaults.MinSliderHeight)
+    }
 
     @Test
     fun sliderPosition_value() {
