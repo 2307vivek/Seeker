@@ -25,6 +25,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.test.SemanticsMatcher
+import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertHeightIsEqualTo
 import androidx.compose.ui.test.assertRangeInfoEquals
 import androidx.compose.ui.test.assertWidthIsEqualTo
@@ -193,5 +195,33 @@ class SeekerTest {
             seekerValue.value = -25451f
         }
         rule.onNodeWithTag(tag).assertRangeInfoEquals(ProgressBarRangeInfo(0f, 0f..1f, 0))
+    }
+
+    @Test
+    fun seeker_checkSemantics() {
+        val seekerValue = mutableStateOf(0f)
+
+        rule.setContent {
+            Seeker(
+                value = seekerValue.value,
+                onValueChange = { seekerValue.value = it }
+            )
+
+            rule.onNodeWithTag(tag)
+                .assertRangeInfoEquals(ProgressBarRangeInfo(0f, 0f..1f, 0))
+                .assert(SemanticsMatcher.keyIsDefined(SemanticsActions.SetProgress))
+
+            rule.runOnIdle {
+                seekerValue.value = 0.5f
+            }
+
+            rule.onNodeWithTag(tag)
+                .assertRangeInfoEquals(ProgressBarRangeInfo(0.5f, 0f..1f, 0))
+
+            rule.onNodeWithTag(tag).performSemanticsAction(SemanticsActions.SetProgress) { it(0.8f) }
+
+            rule.onNodeWithTag(tag)
+                .assertRangeInfoEquals(ProgressBarRangeInfo(0.8f, 0f..1f, 0))
+        }
     }
 }
