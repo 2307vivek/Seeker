@@ -91,7 +91,7 @@ fun Seeker(
                 minHeight = SeekerDefaults.ThumbRippleRadius * 2,
                 minWidth = SeekerDefaults.ThumbRippleRadius * 2
             )
-            .progressSemantics(value, range, onValueChange, enabled)
+            .progressSemantics(value, range, onValueChange, onValueChangeFinished, enabled)
             .focusable(enabled, interactionSource)
     ) {
         val thumbRadius by dimensions.thumbRadius()
@@ -335,6 +335,7 @@ private fun Modifier.progressSemantics(
     value: Float,
     range: ClosedFloatingPointRange<Float>,
     onValueChange: (Float) -> Unit,
+    onValueChangeFinished: (() -> Unit)? = null,
     enabled: Boolean
 ): Modifier {
     val coerced = value.coerceIn(range.start, range.endInclusive)
@@ -347,6 +348,7 @@ private fun Modifier.progressSemantics(
                 false
             } else {
                 onValueChange(newValue)
+                onValueChangeFinished?.invoke()
                 true
             }
         }
