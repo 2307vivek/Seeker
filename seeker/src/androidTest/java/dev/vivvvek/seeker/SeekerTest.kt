@@ -25,6 +25,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.SemanticsMatcher
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertHeightIsEqualTo
@@ -223,5 +224,30 @@ class SeekerTest {
             rule.onNodeWithTag(tag)
                 .assertRangeInfoEquals(ProgressBarRangeInfo(0.8f, 0f..1f, 0))
         }
+    }
+
+    @Test
+    fun seeker_semantics_focusable() {
+        rule.setContent {
+            Seeker(value = 0f, onValueChange = {}, modifier = Modifier.testTag(tag))
+        }
+
+        rule.onNodeWithTag(tag)
+            .assert(SemanticsMatcher.keyIsDefined(SemanticsProperties.Focused))
+    }
+
+    @Test
+    fun seeker_semantics_disabled() {
+        rule.setContent {
+            Seeker(
+                value = 0f,
+                onValueChange = {},
+                modifier = Modifier.testTag(tag),
+                enabled = false
+            )
+        }
+
+        rule.onNodeWithTag(tag)
+            .assert(SemanticsMatcher.keyIsDefined(SemanticsProperties.Disabled))
     }
 }
