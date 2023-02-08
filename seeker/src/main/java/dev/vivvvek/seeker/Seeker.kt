@@ -336,7 +336,7 @@ private fun Modifier.progressSemantics(
     range: ClosedFloatingPointRange<Float>,
     onValueChange: (Float) -> Unit,
     enabled: Boolean
-) : Modifier {
+): Modifier {
     val coerced = value.coerceIn(range.start, range.endInclusive)
     return semantics {
         if (!enabled) disabled()
