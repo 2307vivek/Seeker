@@ -15,7 +15,12 @@
  */
 package dev.vivvvek.seeker
 
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.requiredSizeIn
 import androidx.compose.material.Slider
@@ -31,6 +36,7 @@ import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertHeightIsEqualTo
 import androidx.compose.ui.test.assertRangeInfoEquals
 import androidx.compose.ui.test.assertWidthIsEqualTo
+import androidx.compose.ui.test.click
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performSemanticsAction
@@ -38,6 +44,7 @@ import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -284,11 +291,11 @@ class SeekerTest {
     }
 
     @Test
-    fun slider_drag_out_of_bounds() {
+    fun seeker_drag_out_of_bounds() {
         val seekerValue = mutableStateOf(0f)
 
         rule.setContent {
-            Slider(
+            Seeker(
                 modifier = Modifier.testTag(tag),
                 value = seekerValue.value,
                 onValueChange = { seekerValue.value = it }
@@ -311,6 +318,60 @@ class SeekerTest {
                 up()
                 expected = calculateFraction(left, right, centerX + 100)
             }
+        rule.runOnIdle {
+            assertEquals(expected, seekerValue.value, 0.001f)
+        }
+    }
+
+    @Test
+    fun seeker_scrollableContainer() {
+        val seekerValue = mutableStateOf(0f)
+        val offset = mutableStateOf(0f)
+
+        rule.setContent {
+            Column(
+                modifier = Modifier
+                    .height(2000.dp)
+                    .scrollable(
+                        orientation = Orientation.Vertical,
+                        state = rememberScrollableState { delta ->
+                            offset.value += delta
+                            delta
+                        })
+            ) {
+                Seeker(
+                    modifier = Modifier.testTag(tag),
+                    value = seekerValue.value,
+                    onValueChange = { seekerValue.value = it }
+                )
+            }
+        }
+
+        rule.runOnIdle {
+            assertEquals(0f, seekerValue.value)
+        }
+
+        // Just scroll
+        rule.onNodeWithTag(tag, useUnmergedTree = true)
+            .performTouchInput {
+                down(Offset(centerX, centerY))
+                moveBy(Offset(0f, 500f))
+                up()
+            }
+
+        rule.runOnIdle {
+            assertTrue(offset.value > 0f)
+            assertEquals(0f, seekerValue.value)
+        }
+
+        // Tap
+        var expected = 0f
+        rule.onNodeWithTag(tag, useUnmergedTree = true)
+            .performTouchInput {
+                click(Offset(centerX, centerY))
+                expected = calculateFraction(left, right, centerX)
+            }
+
         rule.runOnIdle {
             assertEquals(expected, seekerValue.value, 0.001f)
         }
