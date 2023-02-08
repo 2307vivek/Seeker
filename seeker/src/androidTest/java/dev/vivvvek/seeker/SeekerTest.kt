@@ -211,6 +211,7 @@ class SeekerTest {
 
         rule.setContent {
             Seeker(
+                modifier = Modifier.testTag(tag),
                 value = seekerValue.value,
                 onValueChange = { seekerValue.value = it }
             )
