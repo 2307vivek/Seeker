@@ -15,6 +15,7 @@
  */
 package dev.vivvvek.seeker
 
+import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
@@ -40,6 +41,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
@@ -107,10 +109,13 @@ fun Seeker(
             widthPx = endPx - (trackStart * 2)
             trackEnd = trackStart + widthPx
         }
+        SideEffect {
+            Log.d("debuggg", "recomposed")
+        }
         val valuePx = valueToPx(value, widthPx, range)
 
         val press =
-            Modifier.pointerInput(widthPx, endPx, isRtl, thumbRadius, interactionSource) {
+            Modifier.pointerInput(range, widthPx, endPx, isRtl, thumbRadius, interactionSource) {
                 detectTapGestures(
                     onTap = { position ->
                         if (enabled) {
@@ -125,7 +130,7 @@ fun Seeker(
             }
 
         val drag =
-            Modifier.pointerInput(widthPx, endPx, isRtl, thumbRadius, interactionSource) {
+            Modifier.pointerInput(range, widthPx, endPx, isRtl, thumbRadius, interactionSource) {
                 detectDragGestures(
                     onDrag = { change, _ ->
                         if (enabled) {
