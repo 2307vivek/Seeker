@@ -112,7 +112,7 @@ fun Seeker(
         val press =
             Modifier.pointerInput(widthPx, endPx, isRtl, thumbRadius, interactionSource) {
                 detectTapGestures(
-                    onPress = { position ->
+                    onTap = { position ->
                         if (enabled) {
                             val positionX =
                                 if (!isRtl) position.x - trackStart else (endPx - position.x) - trackStart
