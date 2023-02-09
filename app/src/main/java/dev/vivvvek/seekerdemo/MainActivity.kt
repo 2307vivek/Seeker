@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Vivek Singh
+ * Copyright 2023 Vivek Singh
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package dev.vivvvek.seeker
+package dev.vivvvek.seekerdemo
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -22,15 +22,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Button
 import androidx.compose.material.Slider
 import androidx.compose.material.Text
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.unit.LayoutDirection
-import dev.vivvvek.seeker.ui.theme.SeekerTheme
+import dev.vivvvek.seeker.Seeker
+import dev.vivvvek.seekerdemo.ui.theme.SeekerTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,19 +48,19 @@ class MainActivity : ComponentActivity() {
                     Button(onClick = { enabled = !enabled }) {
                         Text("jhdfj")
                     }
-                    //CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-                        Seeker(
-                            enabled = enabled,
-                            value = value,
-                            onValueChange = { value = it },
-                            onValueChangeFinished = { count += 1 }
-                        )
+                    // CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+                    Seeker(
+                        enabled = enabled,
+                        value = value,
+                        onValueChange = { value = it },
+                        onValueChangeFinished = { count += 1 }
+                    )
                     Slider(
                         value = value,
                         onValueChange = { value = it },
                         enabled = enabled
                     )
-                    //}
+                    // }
                     Text(text = value.toString())
                     Text(text = count.toString())
                 }

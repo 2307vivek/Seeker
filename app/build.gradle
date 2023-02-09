@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'dev.vivvvek.seeker'
+    namespace 'dev.vivvvek.seekerdemo'
     compileSdk 33
 
     defaultConfig {
-        applicationId "dev.vivvvek.seeker"
+        applicationId "dev.vivvvek.seekerdemo"
         minSdk 24
         targetSdk 33
         versionCode 1

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Vivek Singh
+ * Copyright 2023 Vivek Singh
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package dev.vivvvek.seeker.ui.theme
+package dev.vivvvek.seekerdemo.ui.theme
 
 import androidx.compose.material.Typography
 import androidx.compose.ui.text.TextStyle
