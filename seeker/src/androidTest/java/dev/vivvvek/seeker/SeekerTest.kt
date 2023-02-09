@@ -379,7 +379,7 @@ class SeekerTest {
     }
 
     @Test
-    fun slider_tap_rangeChange() {
+    fun seeker_tap_rangeChange() {
         val seekerValue = mutableStateOf(0f)
         val rangeEnd = mutableStateOf(0.25f)
 
