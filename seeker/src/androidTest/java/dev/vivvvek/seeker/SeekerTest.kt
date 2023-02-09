@@ -481,6 +481,37 @@ class SeekerTest {
         }
     }
 
+    @Test
+    fun seeker_tap_rtl() {
+        val seekerValue = mutableStateOf(0f)
+
+        rule.setContent {
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+                Slider(
+                    modifier = Modifier.testTag(tag),
+                    value = seekerValue.value,
+                    onValueChange = { seekerValue.value = it }
+                )
+            }
+        }
+
+        rule.runOnUiThread {
+            assertEquals(0f, seekerValue.value)
+        }
+
+        var expected = 0f
+
+        rule.onNodeWithTag(tag)
+            .performTouchInput {
+                down(Offset(centerX + 50, centerY))
+                up()
+                expected = calculateFraction(left, right, centerX - 50)
+            }
+        rule.runOnIdle {
+            assertEquals(expected, seekerValue.value, 0.001f)
+        }
+    }
+
     private fun calculateFraction(left: Float, right: Float, pos: Float) = with(rule.density) {
         val offset = SeekerDefaults.ThumbRadius.toPx()
         val start = left + offset
