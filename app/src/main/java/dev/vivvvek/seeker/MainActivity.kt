@@ -18,6 +18,15 @@ package dev.vivvvek.seeker
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material.Button
+import androidx.compose.material.Text
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import dev.vivvvek.seeker.ui.theme.SeekerTheme
 
 class MainActivity : ComponentActivity() {
@@ -25,7 +34,26 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             SeekerTheme {
+                var dp by remember { mutableStateOf(4.dp) }
+
+                var value by remember {
+                    mutableStateOf(0f)
+                }
+
+                //Slider(value = value, onValueChange = { value = it })
+
+                Row {
+                    Button(onClick = { dp += 10.dp }) {
+                        Text("jhdfj")
+                    }
+//                    Seeker(
+//                        progress = 1f,
+//                        onProgressChange = {  },
+//                    )
+                    Text(text = "hghgh")
+                }
             }
         }
     }
+    val colors = listOf(Color.Green, Color.Gray, Color.Green, Color.Blue, Color.Black, Color.White, Color.Yellow, Color.Magenta)
 }
