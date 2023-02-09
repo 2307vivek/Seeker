@@ -23,14 +23,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.requiredSizeIn
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Slider
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.SemanticsActions
@@ -441,6 +439,42 @@ class SeekerTest {
                 up()
                 // subtract here as we're in rtl and going in the opposite direction
                 expected = calculateFraction(left, right, centerX - 100f)
+            }
+        rule.runOnIdle {
+            assertEquals(expected, seekerValue.value, 0.001f)
+        }
+    }
+
+    @Test
+    fun seeker_drag_out_of_bounds_rtl() {
+        val seekerValue = mutableStateOf(0f)
+
+        rule.setContent {
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+                Seeker(
+                    modifier = Modifier.testTag(tag),
+                    value = seekerValue.value,
+                    onValueChange = { seekerValue.value = it }
+                )
+            }
+        }
+
+        rule.runOnUiThread {
+            assertEquals(0f, seekerValue.value)
+        }
+
+        var expected = 0f
+
+        rule.onNodeWithTag(tag)
+            .performTouchInput {
+                down(center)
+                moveBy(Offset(width.toFloat(), 0f))
+                moveBy(Offset(-width.toFloat(), 0f))
+                moveBy(Offset(-width.toFloat(), 0f))
+                moveBy(Offset(width.toFloat() + 100f, 0f))
+                up()
+                // subtract here as we're in rtl and going in the opposite direction
+                expected = calculateFraction(left, right, centerX - 100)
             }
         rule.runOnIdle {
             assertEquals(expected, seekerValue.value, 0.001f)
