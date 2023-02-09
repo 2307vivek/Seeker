@@ -125,8 +125,15 @@ fun Seeker(
 
         val draggableState = rememberDraggableState {
             dragPositionX += it + pressOffset
+
+            val positionX = if (isRtl) {
+                endPx - dragPositionX
+            } else {
+                dragPositionX
+            }
+
             pressOffset = 0f
-            onValueChangeState(pxToValue(dragPositionX, widthPx, range))
+            onValueChangeState(pxToValue(positionX, widthPx, range))
         }
 
         val press =
@@ -142,8 +149,7 @@ fun Seeker(
                 detectTapGestures(
                     onPress = { position ->
                         dragPositionX = 0f
-                        pressOffset =
-                            if (!isRtl) position.x - trackStart else (endPx - position.x) - trackStart
+                        pressOffset = position.x - trackStart
                     },
                     onTap = {
                         scope.launch {
