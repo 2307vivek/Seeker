@@ -127,7 +127,7 @@ fun Seeker(
             dragPositionX += it + pressOffset
 
             val positionX = if (isRtl) {
-                endPx - dragPositionX
+                widthPx - dragPositionX
             } else {
                 dragPositionX
             }
