@@ -40,7 +40,7 @@ class MainActivity : ComponentActivity() {
                     mutableStateOf(0f)
                 }
 
-                //Slider(value = value, onValueChange = { value = it })
+                // Slider(value = value, onValueChange = { value = it })
 
                 Row {
                     Button(onClick = { dp += 10.dp }) {
