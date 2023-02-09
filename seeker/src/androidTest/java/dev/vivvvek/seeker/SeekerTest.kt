@@ -29,6 +29,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.SemanticsActions
@@ -265,8 +266,9 @@ class SeekerTest {
     fun seeker_checkDragInteraction() {
         val seekerValue = mutableStateOf(0f)
         val range = 0f..1f
-
+        var slop = 0f
         rule.setContent {
+            slop = LocalViewConfiguration.current.touchSlop
             Seeker(
                 modifier = Modifier.testTag(tag),
                 value = seekerValue.value,
@@ -286,7 +288,7 @@ class SeekerTest {
                 down(center)
                 moveBy(Offset(100f, 0f))
                 up()
-                expected = calculateFraction(left, right, centerX + 100f)
+                expected = calculateFraction(left, right, centerX + 100f - slop)
             }
         rule.runOnIdle {
             assertEquals(expected, seekerValue.value, 0.001f)
@@ -297,7 +299,9 @@ class SeekerTest {
     fun seeker_drag_out_of_bounds() {
         val seekerValue = mutableStateOf(0f)
 
+        var slop = 0f
         rule.setContent {
+            slop = LocalViewConfiguration.current.touchSlop
             Seeker(
                 modifier = Modifier.testTag(tag),
                 value = seekerValue.value,
@@ -319,7 +323,7 @@ class SeekerTest {
                 moveBy(Offset(-width.toFloat(), 0f))
                 moveBy(Offset(width.toFloat() + 100f, 0f))
                 up()
-                expected = calculateFraction(left, right, centerX + 100)
+                expected = calculateFraction(left, right, centerX + 100 - slop)
             }
         rule.runOnIdle {
             assertEquals(expected, seekerValue.value, 0.001f)
@@ -416,8 +420,10 @@ class SeekerTest {
     @Test
     fun seeker_drag_rtl() {
         val seekerValue = mutableStateOf(0f)
+        var slop = 0f
         rule.setContent {
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+                slop = LocalViewConfiguration.current.touchSlop
                 Seeker(
                     modifier = Modifier.testTag(tag),
                     value = seekerValue.value,
@@ -438,7 +444,7 @@ class SeekerTest {
                 moveBy(Offset(100f, 0f))
                 up()
                 // subtract here as we're in rtl and going in the opposite direction
-                expected = calculateFraction(left, right, centerX - 100f)
+                expected = calculateFraction(left, right, centerX - 100f + slop)
             }
         rule.runOnIdle {
             assertEquals(expected, seekerValue.value, 0.001f)
@@ -448,9 +454,10 @@ class SeekerTest {
     @Test
     fun seeker_drag_out_of_bounds_rtl() {
         val seekerValue = mutableStateOf(0f)
-
+        var slop = 0f
         rule.setContent {
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+                slop = LocalViewConfiguration.current.touchSlop
                 Seeker(
                     modifier = Modifier.testTag(tag),
                     value = seekerValue.value,
@@ -474,7 +481,7 @@ class SeekerTest {
                 moveBy(Offset(width.toFloat() + 100f, 0f))
                 up()
                 // subtract here as we're in rtl and going in the opposite direction
-                expected = calculateFraction(left, right, centerX - 100)
+                expected = calculateFraction(left, right, centerX - 100 + slop)
             }
         rule.runOnIdle {
             assertEquals(expected, seekerValue.value, 0.001f)

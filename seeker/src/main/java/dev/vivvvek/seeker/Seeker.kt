@@ -16,10 +16,13 @@
 package dev.vivvvek.seeker
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.MutatePriority
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
-import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.DragInteraction
@@ -42,8 +45,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -63,6 +69,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 
 @Composable
 fun Seeker(
@@ -111,42 +118,61 @@ fun Seeker(
         val rawValuePx = valueToPx(value, widthPx, range)
         val valuePx = if (isRtl) -rawValuePx else rawValuePx
 
-        val press =
-            Modifier.pointerInput(range, widthPx, endPx, isRtl, thumbRadius, interactionSource) {
-                detectTapGestures(
-                    onTap = { position ->
-                        if (enabled) {
-                            val positionX =
-                                if (!isRtl) position.x - trackStart else (endPx - position.x) - trackStart
+        var dragPositionX by remember { mutableStateOf(0f) }
+        var pressOffset by remember { mutableStateOf(0f) }
 
-                            onValueChangeState(pxToValue(positionX, widthPx, range))
-                            onValueChangeFinished?.invoke()
-                        }
-                    }
-                )
+        val scope = rememberCoroutineScope()
+
+        val draggableState = rememberDraggableState {
+            dragPositionX += it + pressOffset
+
+            val positionX = if (isRtl) {
+                widthPx - dragPositionX
+            } else {
+                dragPositionX
             }
 
-        val drag =
-            Modifier.pointerInput(range, widthPx, endPx, isRtl, thumbRadius, interactionSource) {
-                detectDragGestures(
-                    onDrag = { change, _ ->
-                        if (enabled) {
-                            val positionX =
-                                if (!isRtl) change.position.x - trackStart
-                                else
-                                    (endPx - change.position.x) - trackStart
+            pressOffset = 0f
+            onValueChangeState(pxToValue(positionX, widthPx, range))
+        }
 
-                            onValueChangeState(pxToValue(positionX, widthPx, range))
-                        }
+        val press =
+            Modifier.pointerInput(
+                range,
+                widthPx,
+                endPx,
+                isRtl,
+                enabled,
+                thumbRadius,
+                interactionSource
+            ) {
+                detectTapGestures(
+                    onPress = { position ->
+                        dragPositionX = 0f
+                        pressOffset = position.x - trackStart
                     },
-                    onDragEnd = {
+                    onTap = {
+                        scope.launch {
+                            draggableState.drag(MutatePriority.UserInput) {
+                                dragBy(0f)
+                            }
+                        }
                         onValueChangeFinished?.invoke()
                     }
                 )
             }
 
+        val drag = Modifier.draggable(
+            state = draggableState,
+            orientation = Orientation.Horizontal,
+            onDragStopped = {
+                onValueChangeFinished?.invoke()
+            },
+            interactionSource = interactionSource
+        )
+
         Seeker(
-            modifier = press.then(drag),
+            modifier = if (enabled) press.then(drag) else Modifier,
             widthPx = widthPx,
             valuePx = valuePx,
             enabled = enabled,
