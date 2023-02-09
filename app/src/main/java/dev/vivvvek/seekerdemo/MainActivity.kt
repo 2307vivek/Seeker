@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package dev.vivvvek.seeker
+package dev.vivvvek.seekerdemo
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -27,7 +27,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
-import dev.vivvvek.seeker.ui.theme.SeekerTheme
+import dev.vivvvek.seeker.Seeker
+import dev.vivvvek.seekerdemo.ui.theme.SeekerTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
