@@ -15,7 +15,6 @@
  */
 package dev.vivvvek.seeker
 
-import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
@@ -30,9 +29,9 @@ import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.requiredSizeIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
@@ -41,7 +40,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
@@ -109,10 +107,9 @@ fun Seeker(
             widthPx = endPx - (trackStart * 2)
             trackEnd = trackStart + widthPx
         }
-        SideEffect {
-            Log.d("debuggg", "recomposed")
-        }
-        val valuePx = valueToPx(value, widthPx, range)
+
+        val rawValuePx = valueToPx(value, widthPx, range)
+        val valuePx = if (isRtl) -rawValuePx else rawValuePx
 
         val press =
             Modifier.pointerInput(range, widthPx, endPx, isRtl, thumbRadius, interactionSource) {
@@ -210,14 +207,18 @@ private fun Track(
     val thumbRadius by dimensions.thumbRadius()
     val trackHeight by dimensions.trackHeight()
 
-    var endPx: Float
-    var startPx: Float
+//    var endPx: Float
+//    var startPx: Float
 
     Canvas(
         modifier = modifier
     ) {
-        startPx = thumbRadius.toPx()
-        endPx = startPx + widthPx
+        val isRtl = layoutDirection == LayoutDirection.Rtl
+        val left = thumbRadius.toPx()
+        val right = left + widthPx
+
+        val startPx = if (isRtl) right else left
+        val endPx = if (isRtl) left else right
 
         if (segments.isEmpty()) {
             drawSegment(
@@ -283,7 +284,7 @@ private fun Thumb(
 
     Spacer(
         modifier = Modifier
-            .offset {
+            .absoluteOffset {
                 IntOffset(x = valuePx.toInt(), 0)
             }
             .indication(
