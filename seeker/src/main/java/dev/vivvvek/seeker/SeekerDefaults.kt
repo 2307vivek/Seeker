@@ -23,6 +23,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -33,9 +34,13 @@ object SeekerDefaults {
         progressColor: Color = MaterialTheme.colors.primary,
         trackColor: Color = progressColor.copy(alpha = TrackAlpha),
         disabledProgressColor: Color = MaterialTheme.colors.onSurface.copy(alpha = DisabledProgressAlpha),
-        disabledTrackColor: Color = disabledProgressColor.copy(alpha = DisabledTrackAlpha),
+        disabledTrackColor: Color = disabledProgressColor
+            .copy(alpha = DisabledTrackAlpha)
+            .compositeOver(MaterialTheme.colors.onSurface),
         thumbColor: Color = MaterialTheme.colors.primary,
-        disabledThumbColor: Color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
+        disabledThumbColor: Color = MaterialTheme.colors.onSurface
+            .copy(alpha = ContentAlpha.disabled)
+            .compositeOver(MaterialTheme.colors.surface),
         readAheadColor: Color = Color.White.copy(alpha = ContentAlpha.medium)
     ): SeekerColors = DefaultSeekerColor(
         progressColor = progressColor,
@@ -61,7 +66,7 @@ object SeekerDefaults {
     )
 
     private const val TrackAlpha = 0.24f
-    private const val DisabledTrackAlpha = 0.12f
+    private const val DisabledTrackAlpha = 0.22f
     private const val DisabledProgressAlpha = 0.32f
 
     internal val ThumbRadius = 10.dp
