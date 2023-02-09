@@ -20,7 +20,6 @@ import androidx.compose.foundation.MutatePriority
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
@@ -125,17 +124,26 @@ fun Seeker(
         val scope = rememberCoroutineScope()
 
         val draggableState = rememberDraggableState {
-                dragPositionX += it + pressOffset
-                pressOffset = 0f
-                onValueChangeState(pxToValue(dragPositionX, widthPx, range))
+            dragPositionX += it + pressOffset
+            pressOffset = 0f
+            onValueChangeState(pxToValue(dragPositionX, widthPx, range))
         }
 
         val press =
-            Modifier.pointerInput(range, widthPx, endPx, isRtl, enabled, thumbRadius, interactionSource) {
+            Modifier.pointerInput(
+                range,
+                widthPx,
+                endPx,
+                isRtl,
+                enabled,
+                thumbRadius,
+                interactionSource
+            ) {
                 detectTapGestures(
                     onPress = { position ->
                         dragPositionX = 0f
-                        pressOffset = if (!isRtl) position.x - trackStart else (endPx - position.x) - trackStart
+                        pressOffset =
+                            if (!isRtl) position.x - trackStart else (endPx - position.x) - trackStart
                     },
                     onTap = {
                         scope.launch {
