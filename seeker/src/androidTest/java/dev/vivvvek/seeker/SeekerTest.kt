@@ -23,10 +23,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.requiredSizeIn
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Slider
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.SemanticsActions
@@ -41,6 +45,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Assert.assertEquals
@@ -405,6 +410,38 @@ class SeekerTest {
                 expected = calculateFraction(left, right, centerX + 50)
             }
 
+        rule.runOnIdle {
+            assertEquals(expected, seekerValue.value, 0.001f)
+        }
+    }
+
+    @Test
+    fun seeker_drag_rtl() {
+        val seekerValue = mutableStateOf(0f)
+        rule.setContent {
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
+                Seeker(
+                    modifier = Modifier.testTag(tag),
+                    value = seekerValue.value,
+                    onValueChange = { seekerValue.value = it }
+                )
+            }
+        }
+
+        rule.runOnUiThread {
+            assertEquals(0f, seekerValue.value)
+        }
+
+        var expected = 0f
+
+        rule.onNodeWithTag(tag)
+            .performTouchInput {
+                down(center)
+                moveBy(Offset(100f, 0f))
+                up()
+                // subtract here as we're in rtl and going in the opposite direction
+                expected = calculateFraction(left, right, centerX - 100f)
+            }
         rule.runOnIdle {
             assertEquals(expected, seekerValue.value, 0.001f)
         }
