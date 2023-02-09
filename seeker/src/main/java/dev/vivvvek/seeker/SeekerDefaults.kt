@@ -41,7 +41,7 @@ object SeekerDefaults {
         disabledThumbColor: Color = MaterialTheme.colors.onSurface
             .copy(alpha = ContentAlpha.disabled)
             .compositeOver(MaterialTheme.colors.surface),
-        readAheadColor: Color = Color.White.copy(alpha = ContentAlpha.medium)
+        readAheadColor: Color = MaterialTheme.colors.primary.copy(alpha = ReadAheadAlpha)
     ): SeekerColors = DefaultSeekerColor(
         progressColor = progressColor,
         trackColor = trackColor,
@@ -66,6 +66,7 @@ object SeekerDefaults {
     )
 
     private const val TrackAlpha = 0.24f
+    private const val ReadAheadAlpha = 0.44f
     private const val DisabledTrackAlpha = 0.22f
     private const val DisabledProgressAlpha = 0.32f
 

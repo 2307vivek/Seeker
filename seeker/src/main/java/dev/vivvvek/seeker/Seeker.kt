@@ -59,6 +59,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -76,6 +77,7 @@ fun Seeker(
     modifier: Modifier = Modifier,
     value: Float,
     range: ClosedFloatingPointRange<Float> = 0f..1f,
+    readAheadValue: Float = range.start,
     onValueChange: (Float) -> Unit,
     onValueChangeFinished: (() -> Unit)? = null,
     segments: List<Segment> = emptyList(),
@@ -117,6 +119,9 @@ fun Seeker(
 
         val rawValuePx = valueToPx(value, widthPx, range)
         val valuePx = if (isRtl) -rawValuePx else rawValuePx
+
+        val rawReadAheadValuePx = valueToPx(readAheadValue, widthPx, range)
+        val readAheadValuePx = if (isRtl) -rawReadAheadValuePx else rawReadAheadValuePx
 
         var dragPositionX by remember { mutableStateOf(0f) }
         var pressOffset by remember { mutableStateOf(0f) }
@@ -175,6 +180,7 @@ fun Seeker(
             modifier = if (enabled) press.then(drag) else Modifier,
             widthPx = widthPx,
             valuePx = valuePx,
+            readAheadValuePx = readAheadValuePx,
             enabled = enabled,
             segments = segments,
             colors = colors,
@@ -189,6 +195,7 @@ private fun Seeker(
     modifier: Modifier,
     widthPx: Float,
     valuePx: Float,
+    readAheadValuePx: Float,
     enabled: Boolean,
     segments: List<Segment>,
     colors: SeekerColors,
@@ -206,6 +213,7 @@ private fun Seeker(
             colors = colors,
             widthPx = widthPx,
             valuePx = valuePx,
+            readAheadValuePx = readAheadValuePx,
             dimensions = dimensions
         )
         Thumb(
@@ -226,18 +234,19 @@ private fun Track(
     colors: SeekerColors,
     widthPx: Float,
     valuePx: Float,
+    readAheadValuePx: Float,
     dimensions: SeekerDimensions
 ) {
     val trackColor by colors.trackColor(enabled)
     val progressColor by colors.progressColor(enabled)
+    val readAheadColor by colors.readAheadColor(enabled)
     val thumbRadius by dimensions.thumbRadius()
     val trackHeight by dimensions.trackHeight()
 
-//    var endPx: Float
-//    var startPx: Float
-
     Canvas(
-        modifier = modifier
+        modifier = modifier.graphicsLayer {
+            alpha = 0.99f
+        }
     ) {
         val isRtl = layoutDirection == LayoutDirection.Rtl
         val left = thumbRadius.toPx()
@@ -256,12 +265,22 @@ private fun Track(
         } else {
         }
 
+        // readAhead indicator
+        drawLine(
+            start = Offset(startPx, center.y),
+            end = Offset(startPx + readAheadValuePx, center.y),
+            color = readAheadColor,
+            strokeWidth = trackHeight.toPx(),
+            blendMode = BlendMode.Src
+        )
+
+        // progress indicator
         drawLine(
             start = Offset(startPx, center.y),
             end = Offset(startPx + valuePx, center.y),
             color = progressColor,
             strokeWidth = trackHeight.toPx(),
-            blendMode = BlendMode.SrcIn
+            blendMode = BlendMode.Src
         )
     }
 }
