@@ -18,16 +18,8 @@ package dev.vivvvek.seekerdemo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Column
-import androidx.compose.material.Button
-import androidx.compose.material.Slider
-import androidx.compose.material.Text
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.Color
-import dev.vivvvek.seeker.Seeker
 import dev.vivvvek.seekerdemo.ui.theme.SeekerTheme
 
 class MainActivity : ComponentActivity() {
@@ -35,37 +27,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             SeekerTheme {
-                var count by remember { mutableStateOf(0) }
-                var enabled by remember { mutableStateOf(true) }
-
-                var value by remember {
-                    mutableStateOf(0f)
-                }
-
-                // Slider(value = value, onValueChange = { value = it })
-
-                Column {
-                    Button(onClick = { enabled = !enabled }) {
-                        Text("jhdfj")
-                    }
-                    // CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-                    Seeker(
-                        enabled = enabled,
-                        value = value,
-                        onValueChange = { value = it },
-                        onValueChangeFinished = { count += 1 }
-                    )
-                    Slider(
-                        value = value,
-                        onValueChange = { value = it },
-                        enabled = enabled
-                    )
-                    // }
-                    Text(text = value.toString())
-                    Text(text = count.toString())
-                }
             }
         }
     }
-    val colors = listOf(Color.Green, Color.Gray, Color.Green, Color.Blue, Color.Black, Color.White, Color.Yellow, Color.Magenta)
 }
