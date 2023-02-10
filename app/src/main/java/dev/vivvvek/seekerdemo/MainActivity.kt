@@ -18,8 +18,6 @@ package dev.vivvvek.seekerdemo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import dev.vivvvek.seekerdemo.ui.theme.SeekerTheme
 
 class MainActivity : ComponentActivity() {
