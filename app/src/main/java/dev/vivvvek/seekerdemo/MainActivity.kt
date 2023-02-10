@@ -35,34 +35,27 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             SeekerTheme {
-                var count by remember { mutableStateOf(0) }
+                var readAhead by remember { mutableStateOf(0f) }
                 var enabled by remember { mutableStateOf(true) }
 
                 var value by remember {
                     mutableStateOf(0f)
                 }
 
-                // Slider(value = value, onValueChange = { value = it })
-
                 Column {
-                    Button(onClick = { enabled = !enabled }) {
+                    Button(onClick = { readAhead += 0.1f }) {
                         Text("jhdfj")
                     }
                     // CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
                     Seeker(
                         enabled = enabled,
                         value = value,
+                        readAheadValue = readAhead,
                         onValueChange = { value = it },
-                        onValueChangeFinished = { count += 1 }
-                    )
-                    Slider(
-                        value = value,
-                        onValueChange = { value = it },
-                        enabled = enabled
                     )
                     // }
                     Text(text = value.toString())
-                    Text(text = count.toString())
+                    Text(text = readAhead.toString())
                 }
             }
         }

@@ -58,6 +58,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
@@ -256,11 +257,12 @@ private fun Track(
         val endPx = if (isRtl) left else right
 
         if (segments.isEmpty()) {
-            drawSegment(
-                startPx = startPx,
-                endPx = endPx,
-                trackColor = trackColor,
-                trackHeight = trackHeight.toPx()
+            drawLine(
+                start = Offset(startPx, center.y),
+                end = Offset(endPx, center.y),
+                color = trackColor,
+                strokeWidth = trackHeight.toPx(),
+                cap = StrokeCap.Round
             )
         } else {
         }
@@ -271,7 +273,8 @@ private fun Track(
             end = Offset(startPx + readAheadValuePx, center.y),
             color = readAheadColor,
             strokeWidth = trackHeight.toPx(),
-            blendMode = BlendMode.Src
+            blendMode = BlendMode.Src,
+            cap = StrokeCap.Round
         )
 
         // progress indicator
@@ -280,7 +283,8 @@ private fun Track(
             end = Offset(startPx + valuePx, center.y),
             color = progressColor,
             strokeWidth = trackHeight.toPx(),
-            blendMode = BlendMode.Src
+            blendMode = BlendMode.Src,
+            cap = StrokeCap.Round
         )
     }
 }
