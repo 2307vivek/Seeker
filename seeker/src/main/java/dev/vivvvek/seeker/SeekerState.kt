@@ -74,12 +74,14 @@ class SeekerState() {
             startPx
         }
 
+        val trackStart = trackEnd - widthPx
         return sortedSegments.mapIndexed { index, segment ->
+            val startPx = if (index == 0) trackStart else segmentStartPxs[index]
             val endPx = if (index != sortedSegments.lastIndex) segmentStartPxs[index + 1] else trackEnd
             SegmentPxs(
                 name = segment.name,
                 color = segment.color,
-                startPx = segmentStartPxs[index],
+                startPx = startPx,
                 endPx = endPx
             )
         }
