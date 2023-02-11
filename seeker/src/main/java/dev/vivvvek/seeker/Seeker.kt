@@ -87,12 +87,14 @@ fun Seeker(
     dimensions: SeekerDimensions = SeekerDefaults.seekerDimensions(),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
-//    require(segments.first().start == range.start) {
-//        "the first segment should start from range start value"
-//    }
-    segments.forEach {
-        require(it.start in range) {
-            "segment must start from withing the range."
+    if (segments.isNotEmpty()) {
+        require(segments.first().start == range.start) {
+            "the first segment should start from range start value"
+        }
+        segments.forEach {
+            require(it.start in range) {
+                "segment must start from withing the range."
+            }
         }
     }
 
