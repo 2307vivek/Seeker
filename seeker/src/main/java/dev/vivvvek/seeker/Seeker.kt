@@ -255,6 +255,7 @@ private fun Track(
     val readAheadColor by colors.readAheadColor(enabled)
     val thumbRadius by dimensions.thumbRadius()
     val trackHeight by dimensions.trackHeight()
+    val segmentGap by dimensions.gap()
 
     Canvas(
         modifier = modifier.graphicsLayer {
@@ -278,18 +279,27 @@ private fun Track(
                 cap = StrokeCap.Round
             )
         } else {
-            // segmentToStartPx()
+            segments.forEach {
+                val segmentColor = if (it.color == Color.Unspecified) trackColor else it.color
+                val segmentEnd = it.endPx - segmentGap.toPx()
+                drawSegment(
+                    startPx = it.startPx,
+                    endPx = segmentEnd,
+                    trackColor = segmentColor,
+                    trackHeight = trackHeight.toPx()
+                )
+            }
         }
 
         // readAhead indicator
-        drawLine(
-            start = Offset(startPx, center.y),
-            end = Offset(startPx + readAheadValuePx, center.y),
-            color = readAheadColor,
-            strokeWidth = trackHeight.toPx(),
-            blendMode = BlendMode.Src,
-            cap = StrokeCap.Round
-        )
+//        drawLine(
+//            start = Offset(startPx, center.y),
+//            end = Offset(startPx + readAheadValuePx, center.y),
+//            color = readAheadColor,
+//            strokeWidth = trackHeight.toPx(),
+//            blendMode = BlendMode.SrcIn,
+//            cap = StrokeCap.Round
+//        )
 
         // progress indicator
         drawLine(
@@ -297,7 +307,7 @@ private fun Track(
             end = Offset(startPx + valuePx, center.y),
             color = progressColor,
             strokeWidth = trackHeight.toPx(),
-            blendMode = BlendMode.Src,
+            blendMode = BlendMode.SrcIn,
             cap = StrokeCap.Round
         )
     }
@@ -404,9 +414,15 @@ private fun Modifier.progressSemantics(
 @Preview(showBackground = true)
 @Composable
 fun SeekerPreview() {
+    val segments = listOf(
+        Segment(name = "Intro", start = 0f),
+        Segment(name = "Talk 1", start = 0.5f),
+        Segment(name = "Talk 2", start = 0.8f),
+    )
     Seeker(
-        value = 60f,
-        range = 20f..100f,
+        value = 0.7f,
+        range = 0f..1f,
+        segments = segments,
         onValueChange = { },
     )
 }
