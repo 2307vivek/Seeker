@@ -121,10 +121,14 @@ fun Seeker(
             trackEnd = trackStart + widthPx
         }
 
-        val rawValuePx = valueToPx(value, widthPx, range)
+        val rawValuePx = remember(value, widthPx, range) {
+            valueToPx(value, widthPx, range)
+        }
         val valuePx = if (isRtl) -rawValuePx else rawValuePx
 
-        val rawReadAheadValuePx = valueToPx(readAheadValue, widthPx, range)
+        val rawReadAheadValuePx = remember(readAheadValue, widthPx, range) {
+            valueToPx(readAheadValue, widthPx, range)
+        }
         val readAheadValuePx = if (isRtl) -rawReadAheadValuePx else rawReadAheadValuePx
 
         var dragPositionX by remember { mutableStateOf(0f) }
@@ -216,7 +220,7 @@ private fun Seeker(
             dimensions = dimensions
         )
         Thumb(
-            valuePx = valuePx,
+            valuePx = { valuePx },
             dimensions = dimensions,
             colors = colors,
             enabled = enabled,
@@ -303,7 +307,7 @@ private fun DrawScope.drawSegment(
 
 @Composable
 private fun Thumb(
-    valuePx: Float,
+    valuePx: () -> Float,
     dimensions: SeekerDimensions,
     colors: SeekerColors,
     enabled: Boolean,
@@ -332,7 +336,7 @@ private fun Thumb(
     Spacer(
         modifier = Modifier
             .absoluteOffset {
-                IntOffset(x = valuePx.toInt(), 0)
+                IntOffset(x = valuePx().toInt(), 0)
             }
             .indication(
                 interactionSource = interactionSource,
