@@ -39,6 +39,46 @@ fun rememberSeekerState(): SeekerState = remember {
     SeekerState()
 }
 
+// returns the corresponding position in pixels of progress in the the slider.
+internal fun valueToPx(
+    progress: Float,
+    widthPx: Float,
+    range: ClosedFloatingPointRange<Float>
+): Float {
+    val rangeSIze = range.endInclusive - range.start
+    val p = progress.coerceIn(range.start, range.endInclusive)
+    val progressPercent = (p - range.start) * 100 / rangeSIze
+    return (progressPercent * widthPx / 100)
+}
+
+// returns the corresponding progress value for a position in slider
+internal fun pxToValue(
+    position: Float,
+    widthPx: Float,
+    range: ClosedFloatingPointRange<Float>
+): Float {
+    val rangeSize = range.endInclusive - range.start
+    val percent = position * 100 / widthPx
+    return ((percent * (rangeSize) / 100) + range.start).coerceIn(range.start, range.endInclusive)
+}
+
+// converts the start value of a segment to the corresponding px value at which the segment will
+// appear on screen.
+internal fun segmentToStartPx(
+    segments: MutableList<Segment>,
+    range: ClosedFloatingPointRange<Float>,
+    widthPx: Float
+): List<Float> {
+    val rangeSize = range.endInclusive - range.start
+    val segmentPxs = segments.map { segment ->
+        // percent of the start of this segment in the range size
+        val percent = (segment.start - range.start) * 100 / rangeSize
+        val startPx = percent * widthPx / 100
+        startPx
+    }
+    return segmentPxs.distinct().sorted()
+}
+
 @Immutable
 data class Segment(
     val name: String,

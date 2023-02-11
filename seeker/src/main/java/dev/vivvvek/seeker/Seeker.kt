@@ -371,29 +371,6 @@ private fun Modifier.defaultSeekerDimensions(dimensions: SeekerDimensions) = com
     }
 }
 
-// returns the corresponding position in pixels of progress in the the slider.
-private fun valueToPx(
-    progress: Float,
-    widthPx: Float,
-    range: ClosedFloatingPointRange<Float>
-): Float {
-    val rangeSIze = range.endInclusive - range.start
-    val p = progress.coerceIn(range.start, range.endInclusive)
-    val progressPercent = (p - range.start) * 100 / rangeSIze
-    return (progressPercent * widthPx / 100)
-}
-
-// returns the corresponding progress value for a position in slider
-private fun pxToValue(
-    position: Float,
-    widthPx: Float,
-    range: ClosedFloatingPointRange<Float>
-): Float {
-    val rangeSize = range.endInclusive - range.start
-    val percent = position * 100 / widthPx
-    return ((percent * (rangeSize) / 100) + range.start).coerceIn(range.start, range.endInclusive)
-}
-
 private fun Modifier.progressSemantics(
     value: Float,
     range: ClosedFloatingPointRange<Float>,
