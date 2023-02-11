@@ -122,12 +122,12 @@ fun Seeker(
         }
 
         val rawValuePx = remember(value, widthPx, range) {
-            valueToPx(value, widthPx, range)
+            state.valueToPx(value, widthPx, range)
         }
         val valuePx = if (isRtl) -rawValuePx else rawValuePx
 
         val rawReadAheadValuePx = remember(readAheadValue, widthPx, range) {
-            valueToPx(readAheadValue, widthPx, range)
+            state.valueToPx(readAheadValue, widthPx, range)
         }
         val readAheadValuePx = if (isRtl) -rawReadAheadValuePx else rawReadAheadValuePx
 
@@ -143,7 +143,7 @@ fun Seeker(
                 dragPositionX += it + pressOffset
 
                 pressOffset = 0f
-                onValueChangeState(pxToValue(dragPositionX, widthPx, range))
+                onValueChangeState(state.pxToValue(dragPositionX, widthPx, range))
             }
         }
 
