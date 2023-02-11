@@ -19,9 +19,7 @@ import androidx.compose.foundation.gestures.DraggableState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 
 @Stable
@@ -53,24 +51,38 @@ class SeekerState() {
     ): Float {
         val rangeSize = range.endInclusive - range.start
         val percent = position * 100 / widthPx
-        return ((percent * (rangeSize) / 100) + range.start).coerceIn(range.start, range.endInclusive)
+        return ((percent * (rangeSize) / 100) + range.start).coerceIn(
+            range.start,
+            range.endInclusive
+        )
     }
 
-    // converts the start value of a segment to the corresponding px value at which the segment will
-// appear on screen.
-    internal fun segmentToStartPx(
-        segments: MutableList<Segment>,
+    // converts the start value of a segment to the corresponding start and end pixel values
+    // at which the segment will start and end on the track.
+    internal fun segmentToPxValues(
+        segments: List<Segment>,
         range: ClosedFloatingPointRange<Float>,
-        widthPx: Float
-    ): List<Float> {
+        widthPx: Float,
+        trackEnd: Float
+    ): List<SegmentPxs> {
         val rangeSize = range.endInclusive - range.start
-        val segmentPxs = segments.map { segment ->
+        val sortedSegments = segments.distinct().sortedBy { it.start }
+        val segmentStartPxs = sortedSegments.map { segment ->
             // percent of the start of this segment in the range size
             val percent = (segment.start - range.start) * 100 / rangeSize
             val startPx = percent * widthPx / 100
             startPx
         }
-        return segmentPxs.distinct().sorted()
+
+        return sortedSegments.mapIndexed { index, segment ->
+            val endPx = if (index != sortedSegments.lastIndex) segmentStartPxs[index + 1] else trackEnd
+            SegmentPxs(
+                name = segment.name,
+                color = segment.color,
+                startPx = segmentStartPxs[index],
+                endPx = endPx
+            )
+        }
     }
 }
 

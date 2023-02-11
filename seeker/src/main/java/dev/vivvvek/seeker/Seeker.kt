@@ -123,6 +123,10 @@ fun Seeker(
             trackEnd = trackStart + widthPx
         }
 
+        val segmentStarts = remember(segments, range, widthPx, trackEnd) {
+            state.segmentToPxValues(segments, range, widthPx, trackEnd)
+        }
+
         val rawValuePx = remember(value, widthPx, range) {
             state.valueToPx(value, widthPx, range)
         }
@@ -191,7 +195,7 @@ fun Seeker(
             valuePx = valuePx,
             readAheadValuePx = readAheadValuePx,
             enabled = enabled,
-            segments = segments,
+            segments = segmentStarts,
             colors = colors,
             dimensions = dimensions,
             interactionSource = interactionSource
@@ -206,7 +210,7 @@ private fun Seeker(
     valuePx: Float,
     readAheadValuePx: Float,
     enabled: Boolean,
-    segments: List<Segment>,
+    segments: List<SegmentPxs>,
     colors: SeekerColors,
     dimensions: SeekerDimensions,
     interactionSource: MutableInteractionSource
@@ -239,7 +243,7 @@ private fun Seeker(
 private fun Track(
     modifier: Modifier,
     enabled: Boolean,
-    segments: List<Segment>,
+    segments: List<SegmentPxs>,
     colors: SeekerColors,
     widthPx: Float,
     valuePx: Float,
