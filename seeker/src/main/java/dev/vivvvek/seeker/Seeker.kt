@@ -22,7 +22,6 @@ import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.draggable
-import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.DragInteraction
@@ -76,6 +75,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun Seeker(
     modifier: Modifier = Modifier,
+    state: SeekerState = rememberSeekerState(),
     value: Float,
     range: ClosedFloatingPointRange<Float> = 0f..1f,
     readAheadValue: Float = range.start,
@@ -87,9 +87,9 @@ fun Seeker(
     dimensions: SeekerDimensions = SeekerDefaults.seekerDimensions(),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
-    require(segments.first().start == range.start) {
-        "the first segment should start from range start value"
-    }
+//    require(segments.first().start == range.start) {
+//        "the first segment should start from range start value"
+//    }
     segments.forEach {
         require(it.start in range) {
             "segment must start from withing the range."
@@ -136,11 +136,15 @@ fun Seeker(
 
         val scope = rememberCoroutineScope()
 
-        val draggableState = rememberDraggableState {
-            dragPositionX += it + pressOffset
+        val draggableState = state.draggableState
 
-            pressOffset = 0f
-            onValueChangeState(pxToValue(dragPositionX, widthPx, range))
+        LaunchedEffect(widthPx, range) {
+            state.onDrag = {
+                dragPositionX += it + pressOffset
+
+                pressOffset = 0f
+                onValueChangeState(pxToValue(dragPositionX, widthPx, range))
+            }
         }
 
         val press =
@@ -259,6 +263,7 @@ private fun Track(
         val endPx = if (isRtl) left else right
 
         if (segments.isEmpty()) {
+            // draw the track with a single line.
             drawLine(
                 start = Offset(startPx, center.y),
                 end = Offset(endPx, center.y),
@@ -267,6 +272,7 @@ private fun Track(
                 cap = StrokeCap.Round
             )
         } else {
+            // segmentToStartPx()
         }
 
         // readAhead indicator
