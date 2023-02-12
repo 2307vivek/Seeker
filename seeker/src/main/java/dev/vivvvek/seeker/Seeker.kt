@@ -279,6 +279,7 @@ private fun Track(
                 cap = StrokeCap.Round
             )
         } else {
+            // draw segments
             segments.forEach {
                 val segmentColor = if (it.color == Color.Unspecified) trackColor else it.color
                 val segmentEnd = it.endPx - segmentGap.toPx()
@@ -286,20 +287,21 @@ private fun Track(
                     startPx = it.startPx,
                     endPx = segmentEnd,
                     trackColor = segmentColor,
-                    trackHeight = trackHeight.toPx()
+                    trackHeight = trackHeight.toPx(),
+                    blendMode = BlendMode.SrcOver
                 )
             }
         }
 
         // readAhead indicator
-//        drawLine(
-//            start = Offset(startPx, center.y),
-//            end = Offset(startPx + readAheadValuePx, center.y),
-//            color = readAheadColor,
-//            strokeWidth = trackHeight.toPx(),
-//            blendMode = BlendMode.SrcIn,
-//            cap = StrokeCap.Round
-//        )
+        drawLine(
+            start = Offset(startPx, center.y),
+            end = Offset(startPx + readAheadValuePx, center.y),
+            color = readAheadColor,
+            strokeWidth = trackHeight.toPx(),
+            blendMode = BlendMode.SrcIn,
+            cap = StrokeCap.Round
+        )
 
         // progress indicator
         drawLine(
@@ -317,13 +319,15 @@ private fun DrawScope.drawSegment(
     startPx: Float,
     endPx: Float,
     trackColor: Color,
-    trackHeight: Float
+    trackHeight: Float,
+    blendMode: BlendMode
 ) {
     drawLine(
         start = Offset(startPx, center.y),
         end = Offset(endPx, center.y),
         color = trackColor,
-        strokeWidth = trackHeight
+        strokeWidth = trackHeight,
+        blendMode = blendMode
     )
 }
 
