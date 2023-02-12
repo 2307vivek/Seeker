@@ -33,7 +33,7 @@ class SeekerUtilsTest {
     @Test
     fun check_correctPixelValuesForSegments() {
 
-        val segmentPxs = state.segmentToPxValues(segments, 0f..1f, 100f, 100f)
+        val segmentPxs = segmentToPxValues(segments, 0f..1f, 100f)
 
         val expected = listOf(
             SegmentPxs(name = "Intro", startPx = 0f, endPx = 50f, color = Color.Unspecified),

@@ -31,7 +31,6 @@ import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
@@ -124,7 +123,7 @@ fun Seeker(
         }
 
         val segmentStarts = remember(segments, range, widthPx) {
-            state.segmentToPxValues(segments, range, widthPx)
+            segmentToPxValues(segments, range, widthPx)
         }
 
         LaunchedEffect(value, segments) {
@@ -132,11 +131,11 @@ fun Seeker(
         }
 
         val valuePx = remember(value, widthPx, range) {
-            state.valueToPx(value, widthPx, range)
+            valueToPx(value, widthPx, range)
         }
 
         val readAheadValuePx = remember(readAheadValue, widthPx, range) {
-            state.valueToPx(readAheadValue, widthPx, range)
+            valueToPx(readAheadValue, widthPx, range)
         }
 
         var dragPositionX by remember { mutableStateOf(0f) }
@@ -151,7 +150,7 @@ fun Seeker(
                 dragPositionX += it + pressOffset
 
                 pressOffset = 0f
-                onValueChangeState(state.pxToValue(dragPositionX, widthPx, range))
+                onValueChangeState(pxToValue(dragPositionX, widthPx, range))
             }
         }
 
