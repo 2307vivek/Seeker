@@ -75,7 +75,6 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import java.lang.Math.atan2
 import kotlin.math.atan2
 
 /**
