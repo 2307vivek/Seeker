@@ -69,3 +69,6 @@ internal fun segmentToPxValues(
         )
     }
 }
+
+internal fun rtlAware(value: Float, widthPx: Float, isRtl: Boolean) =
+    if (isRtl) widthPx - value else value

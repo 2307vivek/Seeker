@@ -78,6 +78,37 @@ import kotlinx.coroutines.launch
 import java.lang.Math.atan2
 import kotlin.math.atan2
 
+/**
+ * A seekbar/slider with support for read ahead indicator and segments. The segments can be
+ * separated with gaps in between or with their respective colors, or by both.
+ *
+ * Read ahead indicator shows the amount of content which is ready to use.
+ *
+ * @param modifier modifiers for the seeker layout
+ * @param state state for Seeker
+ * @param value current value of the seeker. If outside of [range] provided, value will be
+ * coerced to this range.
+ * @param readAheadValue the read ahead value for seeker. If outside of [range] provided, value will be
+ * coerced to this range.
+ * @param onValueChange lambda in which value should be updated
+ * @param onValueChangeFinished lambda to be invoked when value change has ended. This callback
+ * shouldn't be used to update the slider value (use [onValueChange] for that), but rather to
+ * know when the user has completed selecting a new value by ending a drag or a click.
+ * @param segments a list of [Segment] for seeker. The track will be divided into different parts based
+ * on the provided start values.
+ * The first segment must start form the start value of the [range], and all the segments must lie in
+ * the specified [range], else an [IllegalArgumentException] will be thrown.
+ * will be thrown.
+ * @param enabled whether or not component is enabled and can be interacted with or not
+ * @param colors [SeekerColors] that will be used to determine the color of the Slider parts in
+ * different state. See [SeekerDefaults.seekerColors] to customize.
+ * @param dimensions [SeekerDimensions] that will be used to determine the dimensions of
+ * different Seeker parts in different state. See [SeekerDefaults.seekerDimensions] to customize.
+ * @param interactionSource the [MutableInteractionSource] representing the stream of
+ * [Interaction]s for this Seeker. You can create and pass in your own remembered
+ * [MutableInteractionSource] if you want to observe [Interaction]s and customize the
+ * appearance / behavior of this Seeker in different [Interaction]s.
+ * */
 @Composable
 fun Seeker(
     modifier: Modifier = Modifier,
@@ -321,7 +352,7 @@ private fun Track(
     }
 }
 
-fun DrawScope.drawLine(
+private fun DrawScope.drawLine(
     color: Color,
     start: Offset,
     end: Offset,
@@ -491,9 +522,6 @@ private fun Modifier.progressSemantics(
         }
     }.progressSemantics(value, range, 0)
 }
-
-internal fun rtlAware(value: Float, widthPx: Float, isRtl: Boolean) =
-    if (isRtl) widthPx - value else value
 
 @Preview(showBackground = true)
 @Composable
