@@ -30,7 +30,7 @@ class SeekerState() {
 
     var currentSegment: Segment by mutableStateOf(Segment.Unspecified)
 
-    var onDrag: ((Float) -> Unit)? = null
+    internal var onDrag: ((Float) -> Unit)? = null
 
     internal val draggableState = DraggableState {
         onDrag?.invoke(it)
