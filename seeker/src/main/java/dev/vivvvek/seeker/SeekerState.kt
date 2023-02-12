@@ -73,22 +73,20 @@ class SeekerState() {
         segments: List<Segment>,
         range: ClosedFloatingPointRange<Float>,
         widthPx: Float,
-        trackEnd: Float
     ): List<SegmentPxs> {
-        val trackStart = trackEnd - widthPx
 
         val rangeSize = range.endInclusive - range.start
         val sortedSegments = segments.distinct().sortedBy { it.start }
         val segmentStartPxs = sortedSegments.map { segment ->
+
             // percent of the start of this segment in the range size
             val percent = (segment.start - range.start) * 100 / rangeSize
             val startPx = percent * widthPx / 100
-            startPx + trackStart
+            startPx
         }
 
         return sortedSegments.mapIndexed { index, segment ->
-//            val startPx = if (index == 0) trackStart else segmentStartPxs[index]
-            val endPx = if (index != sortedSegments.lastIndex) segmentStartPxs[index + 1] else trackEnd
+            val endPx = if (index != sortedSegments.lastIndex) segmentStartPxs[index + 1] else widthPx
             SegmentPxs(
                 name = segment.name,
                 color = segment.color,

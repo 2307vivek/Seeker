@@ -34,6 +34,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.requiredSizeIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
@@ -59,6 +60,7 @@ import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
@@ -113,33 +115,29 @@ fun Seeker(
         val trackStart: Float
         val endPx = constraints.maxWidth.toFloat()
         val widthPx: Float
-        val trackEnd: Float
 
         val isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
 
         with(LocalDensity.current) {
             trackStart = thumbRadius.toPx()
             widthPx = endPx - (trackStart * 2)
-            trackEnd = trackStart + widthPx
         }
 
-        val segmentStarts = remember(segments, range, widthPx, trackEnd) {
-            state.segmentToPxValues(segments, range, widthPx, trackEnd)
+        val segmentStarts = remember(segments, range, widthPx) {
+            state.segmentToPxValues(segments, range, widthPx)
         }
 
         LaunchedEffect(value, segments) {
             state.currentSegment(value, segments)
         }
 
-        val rawValuePx = remember(value, widthPx, range) {
+        val valuePx = remember(value, widthPx, range) {
             state.valueToPx(value, widthPx, range)
         }
-        val valuePx = if (isRtl) -rawValuePx else rawValuePx
 
-        val rawReadAheadValuePx = remember(readAheadValue, widthPx, range) {
+        val readAheadValuePx = remember(readAheadValue, widthPx, range) {
             state.valueToPx(readAheadValue, widthPx, range)
         }
-        val readAheadValuePx = if (isRtl) -rawReadAheadValuePx else rawReadAheadValuePx
 
         var dragPositionX by remember { mutableStateOf(0f) }
         var pressOffset by remember { mutableStateOf(0f) }
@@ -268,54 +266,52 @@ private fun Track(
     ) {
         val isRtl = layoutDirection == LayoutDirection.Rtl
         val left = thumbRadius.toPx()
-        val right = left + widthPx
 
-        val startPx = if (isRtl) right else left
-        val endPx = if (isRtl) left else right
+        translate(left = left) {
+            if (segments.isEmpty()) {
+                // draw the track with a single line.
+                drawLine(
+                    start = Offset(rtlAware(0f, widthPx, isRtl), center.y),
+                    end = Offset(rtlAware(widthPx, widthPx, isRtl), center.y),
+                    color = trackColor,
+                    strokeWidth = trackHeight.toPx(),
+                    cap = StrokeCap.Round
+                )
+            } else {
+                // draw segments
+                segments.forEachIndexed { index, it ->
+                    val segmentColor = if (it.color == Color.Unspecified) trackColor else it.color
+                    val segmentEnd = if (index != segments.lastIndex) it.endPx - segmentGap.toPx() else it.endPx
+                    drawSegment(
+                        startPx = rtlAware(it.startPx, widthPx, isRtl),
+                        endPx = rtlAware(segmentEnd, widthPx, isRtl),
+                        trackColor = segmentColor,
+                        trackHeight = trackHeight.toPx(),
+                        blendMode = BlendMode.SrcOver
+                    )
+                }
+            }
 
-        if (segments.isEmpty()) {
-            // draw the track with a single line.
+            // readAhead indicator
             drawLine(
-                start = Offset(startPx, center.y),
-                end = Offset(endPx, center.y),
-                color = trackColor,
+                start = Offset(rtlAware(0f, widthPx, isRtl), center.y),
+                end = Offset(rtlAware(readAheadValuePx, widthPx, isRtl), center.y),
+                color = readAheadColor,
                 strokeWidth = trackHeight.toPx(),
+                blendMode = BlendMode.SrcIn,
                 cap = StrokeCap.Round
             )
-        } else {
-            // draw segments
-            segments.forEach {
-                val segmentColor = if (it.color == Color.Unspecified) trackColor else it.color
-                val segmentEnd = it.endPx - segmentGap.toPx()
-                drawSegment(
-                    startPx = it.startPx,
-                    endPx = segmentEnd,
-                    trackColor = segmentColor,
-                    trackHeight = trackHeight.toPx(),
-                    blendMode = BlendMode.SrcOver
-                )
-            }
+
+            // progress indicator
+            drawLine(
+                start = Offset(rtlAware(0f, widthPx, isRtl), center.y),
+                end = Offset(rtlAware(valuePx, widthPx, isRtl), center.y),
+                color = progressColor,
+                strokeWidth = trackHeight.toPx(),
+                blendMode = BlendMode.SrcIn,
+                cap = StrokeCap.Round
+            )
         }
-
-        // readAhead indicator
-        drawLine(
-            start = Offset(startPx, center.y),
-            end = Offset(startPx + readAheadValuePx, center.y),
-            color = readAheadColor,
-            strokeWidth = trackHeight.toPx(),
-            blendMode = BlendMode.SrcIn,
-            cap = StrokeCap.Round
-        )
-
-        // progress indicator
-        drawLine(
-            start = Offset(startPx, center.y),
-            end = Offset(startPx + valuePx, center.y),
-            color = progressColor,
-            strokeWidth = trackHeight.toPx(),
-            blendMode = BlendMode.SrcIn,
-            cap = StrokeCap.Round
-        )
     }
 }
 
@@ -365,7 +361,7 @@ private fun Thumb(
 
     Spacer(
         modifier = Modifier
-            .absoluteOffset {
+            .offset {
                 IntOffset(x = valuePx().toInt(), 0)
             }
             .indication(
@@ -418,6 +414,9 @@ private fun Modifier.progressSemantics(
         }
     }.progressSemantics(value, range, 0)
 }
+
+internal fun rtlAware(value: Float, widthPx: Float, isRtl: Boolean) =
+    if (isRtl) widthPx - value else value
 
 @Preview(showBackground = true)
 @Composable
