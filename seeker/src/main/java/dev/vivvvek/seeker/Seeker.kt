@@ -22,7 +22,6 @@ import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.draggable
-import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.hoverable
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.DragInteraction
@@ -76,6 +75,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun Seeker(
     modifier: Modifier = Modifier,
+    state: SeekerState = rememberSeekerState(),
     value: Float,
     range: ClosedFloatingPointRange<Float> = 0f..1f,
     readAheadValue: Float = range.start,
@@ -87,9 +87,14 @@ fun Seeker(
     dimensions: SeekerDimensions = SeekerDefaults.seekerDimensions(),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
-    segments.forEach {
-        require(it.start in range) {
-            "segment must start from withing the range."
+    if (segments.isNotEmpty()) {
+        require(segments.first().start == range.start) {
+            "the first segment should start from range start value"
+        }
+        segments.forEach {
+            require(it.start in range) {
+                "segment must start from withing the range."
+            }
         }
     }
 
@@ -118,13 +123,17 @@ fun Seeker(
             trackEnd = trackStart + widthPx
         }
 
+        val segmentStarts = remember(segments, range, widthPx, trackEnd) {
+            state.segmentToPxValues(segments, range, widthPx, trackEnd)
+        }
+
         val rawValuePx = remember(value, widthPx, range) {
-            valueToPx(value, widthPx, range)
+            state.valueToPx(value, widthPx, range)
         }
         val valuePx = if (isRtl) -rawValuePx else rawValuePx
 
         val rawReadAheadValuePx = remember(readAheadValue, widthPx, range) {
-            valueToPx(readAheadValue, widthPx, range)
+            state.valueToPx(readAheadValue, widthPx, range)
         }
         val readAheadValuePx = if (isRtl) -rawReadAheadValuePx else rawReadAheadValuePx
 
@@ -133,11 +142,15 @@ fun Seeker(
 
         val scope = rememberCoroutineScope()
 
-        val draggableState = rememberDraggableState {
-            dragPositionX += it + pressOffset
+        val draggableState = state.draggableState
 
-            pressOffset = 0f
-            onValueChangeState(pxToValue(dragPositionX, widthPx, range))
+        LaunchedEffect(widthPx, range) {
+            state.onDrag = {
+                dragPositionX += it + pressOffset
+
+                pressOffset = 0f
+                onValueChangeState(state.pxToValue(dragPositionX, widthPx, range))
+            }
         }
 
         val press =
@@ -182,7 +195,7 @@ fun Seeker(
             valuePx = valuePx,
             readAheadValuePx = readAheadValuePx,
             enabled = enabled,
-            segments = segments,
+            segments = segmentStarts,
             colors = colors,
             dimensions = dimensions,
             interactionSource = interactionSource
@@ -197,7 +210,7 @@ private fun Seeker(
     valuePx: Float,
     readAheadValuePx: Float,
     enabled: Boolean,
-    segments: List<Segment>,
+    segments: List<SegmentPxs>,
     colors: SeekerColors,
     dimensions: SeekerDimensions,
     interactionSource: MutableInteractionSource
@@ -230,7 +243,7 @@ private fun Seeker(
 private fun Track(
     modifier: Modifier,
     enabled: Boolean,
-    segments: List<Segment>,
+    segments: List<SegmentPxs>,
     colors: SeekerColors,
     widthPx: Float,
     valuePx: Float,
@@ -242,6 +255,7 @@ private fun Track(
     val readAheadColor by colors.readAheadColor(enabled)
     val thumbRadius by dimensions.thumbRadius()
     val trackHeight by dimensions.trackHeight()
+    val segmentGap by dimensions.gap()
 
     Canvas(
         modifier = modifier.graphicsLayer {
@@ -256,6 +270,7 @@ private fun Track(
         val endPx = if (isRtl) left else right
 
         if (segments.isEmpty()) {
+            // draw the track with a single line.
             drawLine(
                 start = Offset(startPx, center.y),
                 end = Offset(endPx, center.y),
@@ -264,6 +279,18 @@ private fun Track(
                 cap = StrokeCap.Round
             )
         } else {
+            // draw segments
+            segments.forEach {
+                val segmentColor = if (it.color == Color.Unspecified) trackColor else it.color
+                val segmentEnd = it.endPx - segmentGap.toPx()
+                drawSegment(
+                    startPx = it.startPx,
+                    endPx = segmentEnd,
+                    trackColor = segmentColor,
+                    trackHeight = trackHeight.toPx(),
+                    blendMode = BlendMode.SrcOver
+                )
+            }
         }
 
         // readAhead indicator
@@ -272,7 +299,7 @@ private fun Track(
             end = Offset(startPx + readAheadValuePx, center.y),
             color = readAheadColor,
             strokeWidth = trackHeight.toPx(),
-            blendMode = BlendMode.Src,
+            blendMode = BlendMode.SrcIn,
             cap = StrokeCap.Round
         )
 
@@ -282,7 +309,7 @@ private fun Track(
             end = Offset(startPx + valuePx, center.y),
             color = progressColor,
             strokeWidth = trackHeight.toPx(),
-            blendMode = BlendMode.Src,
+            blendMode = BlendMode.SrcIn,
             cap = StrokeCap.Round
         )
     }
@@ -292,13 +319,15 @@ private fun DrawScope.drawSegment(
     startPx: Float,
     endPx: Float,
     trackColor: Color,
-    trackHeight: Float
+    trackHeight: Float,
+    blendMode: BlendMode
 ) {
     drawLine(
         start = Offset(startPx, center.y),
         end = Offset(endPx, center.y),
         color = trackColor,
-        strokeWidth = trackHeight
+        strokeWidth = trackHeight,
+        blendMode = blendMode
     )
 }
 
@@ -362,29 +391,6 @@ private fun Modifier.defaultSeekerDimensions(dimensions: SeekerDimensions) = com
     }
 }
 
-// returns the corresponding position in pixels of progress in the the slider.
-private fun valueToPx(
-    progress: Float,
-    widthPx: Float,
-    range: ClosedFloatingPointRange<Float>
-): Float {
-    val rangeSIze = range.endInclusive - range.start
-    val p = progress.coerceIn(range.start, range.endInclusive)
-    val progressPercent = (p - range.start) * 100 / rangeSIze
-    return (progressPercent * widthPx / 100)
-}
-
-// returns the corresponding progress value for a position in slider
-private fun pxToValue(
-    position: Float,
-    widthPx: Float,
-    range: ClosedFloatingPointRange<Float>
-): Float {
-    val rangeSize = range.endInclusive - range.start
-    val percent = position * 100 / widthPx
-    return ((percent * (rangeSize) / 100) + range.start).coerceIn(range.start, range.endInclusive)
-}
-
 private fun Modifier.progressSemantics(
     value: Float,
     range: ClosedFloatingPointRange<Float>,
@@ -412,9 +418,15 @@ private fun Modifier.progressSemantics(
 @Preview(showBackground = true)
 @Composable
 fun SeekerPreview() {
+    val segments = listOf(
+        Segment(name = "Intro", start = 0f),
+        Segment(name = "Talk 1", start = 0.5f),
+        Segment(name = "Talk 2", start = 0.8f),
+    )
     Seeker(
-        value = 60f,
-        range = 20f..100f,
+        value = 0.7f,
+        range = 0f..1f,
+        segments = segments,
         onValueChange = { },
     )
 }
