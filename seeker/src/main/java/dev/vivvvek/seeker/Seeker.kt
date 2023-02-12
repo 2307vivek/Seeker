@@ -127,6 +127,10 @@ fun Seeker(
             state.segmentToPxValues(segments, range, widthPx, trackEnd)
         }
 
+        LaunchedEffect(value, segments) {
+            state.currentSegment(value, segments)
+        }
+
         val rawValuePx = remember(value, widthPx, range) {
             state.valueToPx(value, widthPx, range)
         }

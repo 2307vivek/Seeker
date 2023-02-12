@@ -19,17 +19,27 @@ import androidx.compose.foundation.gestures.DraggableState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 
 @Stable
 class SeekerState() {
 
+    var currentSegment: Segment by mutableStateOf(Segment.Unspecified)
+
     var onDrag: ((Float) -> Unit)? = null
 
-    val draggableState = DraggableState {
+    internal val draggableState = DraggableState {
         onDrag?.invoke(it)
     }
+
+    internal fun currentSegment(
+        value: Float,
+        segments: List<Segment>
+    ) = (segments.findLast { value >= it.start } ?: Segment.Unspecified).also { this.currentSegment = it }
 
     // returns the corresponding position in pixels of progress in the the slider.
     internal fun valueToPx(
@@ -99,7 +109,11 @@ data class Segment(
     val name: String,
     val start: Float,
     val color: Color = Color.Unspecified
-)
+) {
+    companion object {
+        val Unspecified = Segment(name = "", start = 0f)
+    }
+}
 
 @Immutable
 internal data class SegmentPxs(
