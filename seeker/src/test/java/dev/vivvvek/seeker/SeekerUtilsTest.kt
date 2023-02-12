@@ -28,6 +28,11 @@ class SeekerUtilsTest {
     @Before
     fun setup() {
         state = SeekerState()
+        segments = listOf(
+            Segment(name = "Intro", start = 0f),
+            Segment(name = "Talk 1", start = 0.5f),
+            Segment(name = "Talk 2", start = 0.8f),
+        )
     }
 
     @Test
