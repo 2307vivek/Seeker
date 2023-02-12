@@ -519,6 +519,52 @@ class SeekerTest {
         }
     }
 
+    @Test
+    fun seeker_checkCorrectCurrentSegmentUpdated() {
+        val seekerValue = mutableStateOf(0f)
+        val range = 0f..1f
+        var slop = 0f
+        var state: SeekerState? = null
+
+        val segments = listOf(
+            Segment(name = "Intro", start = 0f),
+            Segment(name = "Talk 1", start = 0.5f),
+            Segment(name = "Talk 2", start = 0.8f),
+        )
+
+        rule.setContent {
+            slop = LocalViewConfiguration.current.touchSlop
+            state = rememberSeekerState()
+            Seeker(
+                modifier = Modifier.testTag(tag),
+                value = seekerValue.value,
+                state = state!!,
+                range = range,
+                segments = segments,
+                onValueChange = { seekerValue.value = it }
+            )
+        }
+
+        rule.runOnUiThread {
+            assertEquals(0f, seekerValue.value)
+        }
+
+        var expected = 0f
+        var expectedSegment = segments[1]
+
+        rule.onNodeWithTag(tag)
+            .performTouchInput {
+                down(center)
+                moveBy(Offset(100f, 0f))
+                up()
+                expected = calculateFraction(left, right, centerX + 100f - slop)
+            }
+        rule.runOnIdle {
+            assertEquals(expected, seekerValue.value, 0.001f)
+            assertEquals(expectedSegment, state?.currentSegment)
+        }
+    }
+
     private fun calculateFraction(left: Float, right: Float, pos: Float) = with(rule.density) {
         val offset = SeekerDefaults.ThumbRadius.toPx()
         val start = left + offset
