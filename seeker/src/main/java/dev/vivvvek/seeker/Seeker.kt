@@ -55,10 +55,13 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.rotateRad
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
@@ -72,6 +75,8 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import java.lang.Math.atan2
+import kotlin.math.atan2
 
 @Composable
 fun Seeker(
@@ -286,7 +291,9 @@ private fun Track(
                         endPx = rtlAware(segmentEnd, widthPx, isRtl),
                         trackColor = segmentColor,
                         trackHeight = trackHeight.toPx(),
-                        blendMode = BlendMode.SrcOver
+                        blendMode = BlendMode.SrcOver,
+                        startCap = if (index == 0) StrokeCap.Round else null,
+                        endCap = if (index == segments.lastIndex) StrokeCap.Round else null
                     )
                 }
             }
@@ -314,19 +321,90 @@ private fun Track(
     }
 }
 
+fun DrawScope.drawLine(
+    color: Color,
+    start: Offset,
+    end: Offset,
+    strokeWidth: Float = Stroke.HairlineWidth,
+    startCap: StrokeCap? = null,
+    endCap: StrokeCap? = null,
+    blendMode: BlendMode
+) {
+    drawLine(
+        color = color,
+        start = start,
+        end = end,
+        strokeWidth = strokeWidth,
+        cap = StrokeCap.Butt,
+    )
+
+    startCap?.let {
+        drawCap(
+            color = color,
+            start = start,
+            end = end,
+            strokeWidth = strokeWidth,
+            cap = it,
+            blendMode = blendMode
+        )
+    }
+
+    endCap?.let {
+        drawCap(
+            color = color,
+            start = end,
+            end = start,
+            strokeWidth = strokeWidth,
+            cap = it,
+            blendMode = blendMode
+        )
+    }
+}
+
+private fun DrawScope.drawCap(
+    color: Color,
+    start: Offset,
+    end: Offset,
+    strokeWidth: Float = Stroke.HairlineWidth,
+    cap: StrokeCap,
+    blendMode: BlendMode
+) {
+    when (cap) {
+        StrokeCap.Butt -> Unit
+        StrokeCap.Round -> {
+            drawCircle(color, center = start, radius = strokeWidth / 2, blendMode = blendMode)
+        }
+        StrokeCap.Square -> {
+            val offset = Offset(strokeWidth / 2, strokeWidth / 2)
+            val size = Size(strokeWidth, strokeWidth)
+
+            rotateRad(
+                radians = (end - start).run { atan2(x, y) },
+                pivot = start
+            ) {
+                drawRect(color, topLeft = start - offset, size = size, blendMode = blendMode)
+            }
+        }
+    }
+}
+
 private fun DrawScope.drawSegment(
     startPx: Float,
     endPx: Float,
     trackColor: Color,
     trackHeight: Float,
-    blendMode: BlendMode
+    blendMode: BlendMode,
+    startCap: StrokeCap? = null,
+    endCap: StrokeCap? = null
 ) {
     drawLine(
         start = Offset(startPx, center.y),
         end = Offset(endPx, center.y),
         color = trackColor,
         strokeWidth = trackHeight,
-        blendMode = blendMode
+        blendMode = blendMode,
+        endCap = endCap,
+        startCap = startCap
     )
 }
 
