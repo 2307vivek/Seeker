@@ -17,20 +17,28 @@ package dev.vivvvek.seeker
 
 import androidx.compose.ui.graphics.Color
 import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Test
 
 class SeekerUtilsTest {
 
-    @Test
-    fun check_correctPixelValuesForSegments() {
-        val state = SeekerState()
-        val segments = listOf(
+    private lateinit var state: SeekerState
+    private lateinit var segments: List<Segment>
+
+    @Before
+    fun setup() {
+        state = SeekerState()
+        segments = listOf(
             Segment(name = "Intro", start = 0f),
             Segment(name = "Talk 1", start = 0.5f),
-            Segment(name = "Talk 2", start = 0.8f)
+            Segment(name = "Talk 2", start = 0.8f),
         )
+    }
 
-        val segmentPxs = state.segmentToPxValues(segments, 0f..1f, 100f, 100f)
+    @Test
+    fun check_correctPixelValuesForSegments() {
+
+        val segmentPxs = segmentToPxValues(segments, 0f..1f, 100f)
 
         val expected = listOf(
             SegmentPxs(name = "Intro", startPx = 0f, endPx = 50f, color = Color.Unspecified),
