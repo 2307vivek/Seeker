@@ -32,7 +32,7 @@ object SeekerDefaults {
     @Composable
     fun seekerColors(
         progressColor: Color = MaterialTheme.colors.primary,
-        trackColor: Color = progressColor.copy(alpha = TrackAlpha),
+        trackColor: Color = TrackColor,
         disabledProgressColor: Color = MaterialTheme.colors.onSurface.copy(alpha = DisabledProgressAlpha),
         disabledTrackColor: Color = disabledProgressColor
             .copy(alpha = DisabledTrackAlpha)
@@ -41,7 +41,7 @@ object SeekerDefaults {
         disabledThumbColor: Color = MaterialTheme.colors.onSurface
             .copy(alpha = ContentAlpha.disabled)
             .compositeOver(MaterialTheme.colors.surface),
-        readAheadColor: Color = MaterialTheme.colors.primary.copy(alpha = ReadAheadAlpha)
+        readAheadColor: Color = ReadAheadColor
     ): SeekerColors = DefaultSeekerColor(
         progressColor = progressColor,
         trackColor = trackColor,
@@ -64,6 +64,9 @@ object SeekerDefaults {
         thumbRadius = thumbRadius,
         gap = gap
     )
+
+    private val TrackColor = Color(0xFFD9D9D9)
+    private val ReadAheadColor = Color(0xFFBDBDBD)
 
     private const val TrackAlpha = 0.24f
     private const val ReadAheadAlpha = 0.44f
