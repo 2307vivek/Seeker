@@ -29,6 +29,19 @@ import androidx.compose.ui.unit.dp
 
 object SeekerDefaults {
 
+    /**
+     * Creates a [SeekerColors] that represents the different colors used in parts of the
+     * [Seeker] in different states.
+     *
+     * @param progressColor color of the progress indicator.
+     * @param trackColor color of the track.
+     * @param disabledProgressColor color of the progress indicator when the Slider is
+     * disabled.
+     * @param disabledTrackColor color of the track when theSlider is disabled.
+     * @param thumbColor thumb color when enabled
+     * @param disabledThumbColor thumb color when disabled.
+     * @param readAheadColor color of the read ahead indicator.
+     */
     @Composable
     fun seekerColors(
         progressColor: Color = MaterialTheme.colors.primary,
@@ -52,10 +65,19 @@ object SeekerDefaults {
         readAheadColor = readAheadColor
     )
 
+    /**
+     * Creates a [SeekerDimensions] which represents dimension of different parts of [Seeker] in
+     * different states.
+     *
+     * @param trackHeight height of the track.
+     * @param progressHeight height of the progress indicator.
+     * @param thumbRadius radius of the thumb slider.
+     * @param gap gap between two segments in the track.
+     * */
     @Composable
     fun seekerDimensions(
         trackHeight: Dp = TrackHeight,
-        progressHeight: Dp = ProgressHeight,
+        progressHeight: Dp = trackHeight,
         thumbRadius: Dp = ThumbRadius,
         gap: Dp = Gap
     ): SeekerDimensions = DefaultSeekerDimensions(
@@ -75,7 +97,6 @@ object SeekerDefaults {
 
     internal val ThumbRadius = 10.dp
     private val TrackHeight = 4.dp
-    private val ProgressHeight = 4.dp
     private val Gap = 2.dp
 
     internal val MinSliderHeight = 48.dp
@@ -87,33 +108,76 @@ object SeekerDefaults {
     internal val ThumbRippleRadius = 24.dp
 }
 
+/**
+ * Represents the colors used by different parts of [Seeker] in different states.
+ *
+ * See [SeekerDefaults.seekerColors] for default implementation.
+ * */
 @Stable
 interface SeekerColors {
 
+    /**
+     * Represents the color used for the seeker's track, depending on [enabled].
+     *
+     * @param enabled whether the [Seeker] is enabled or not
+     */
     @Composable
     fun trackColor(enabled: Boolean): State<Color>
 
+    /**
+     * Represents the color used for the seeker's thumb, depending on [enabled].
+     *
+     * @param enabled whether the [Seeker] is enabled or not
+     */
     @Composable
     fun thumbColor(enabled: Boolean): State<Color>
 
+    /**
+     * Represents the color used for the seeker's progress indicator, depending on [enabled].
+     *
+     * @param enabled whether the [Seeker] is enabled or not
+     */
     @Composable
     fun progressColor(enabled: Boolean): State<Color>
 
+    /**
+     * Represents the color used for the seeker's read ahead indicator, depending on [enabled].
+     *
+     * @param enabled whether the [Seeker] is enabled or not
+     */
     @Composable
     fun readAheadColor(enabled: Boolean): State<Color>
 }
 
+/**
+ * Represents the dimensions used by different parts of [Seeker] in different states.
+ *
+ * See [SeekerDefaults.seekerDimensions] for default implementation.
+ * */
 @Stable
 interface SeekerDimensions {
+
+    /**
+     * Represents the height used for the seeker's track.
+     */
     @Composable
     fun trackHeight(): State<Dp>
 
+    /**
+     * Represents the height used for the seeker's progress indicator.
+     */
     @Composable
     fun progressHeight(): State<Dp>
 
+    /**
+     * Represents the gap used between two segments in seeker's track.
+     */
     @Composable
     fun gap(): State<Dp>
 
+    /**
+     * Represents the radius used for seeker's thumb.
+     */
     @Composable
     fun thumbRadius(): State<Dp>
 }
