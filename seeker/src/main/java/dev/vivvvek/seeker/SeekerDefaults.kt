@@ -77,7 +77,7 @@ object SeekerDefaults {
     @Composable
     fun seekerDimensions(
         trackHeight: Dp = TrackHeight,
-        progressHeight: Dp = ProgressHeight,
+        progressHeight: Dp = trackHeight,
         thumbRadius: Dp = ThumbRadius,
         gap: Dp = Gap
     ): SeekerDimensions = DefaultSeekerDimensions(
@@ -97,7 +97,6 @@ object SeekerDefaults {
 
     internal val ThumbRadius = 10.dp
     private val TrackHeight = 4.dp
-    private val ProgressHeight = 4.dp
     private val Gap = 2.dp
 
     internal val MinSliderHeight = 48.dp
