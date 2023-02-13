@@ -286,6 +286,7 @@ private fun Track(
     val readAheadColor by colors.readAheadColor(enabled)
     val thumbRadius by dimensions.thumbRadius()
     val trackHeight by dimensions.trackHeight()
+    val progressHeight by dimensions.progressHeight()
     val segmentGap by dimensions.gap()
 
     Canvas(
@@ -328,7 +329,7 @@ private fun Track(
                 start = Offset(rtlAware(0f, widthPx, isRtl), center.y),
                 end = Offset(rtlAware(readAheadValuePx, widthPx, isRtl), center.y),
                 color = readAheadColor,
-                strokeWidth = trackHeight.toPx(),
+                strokeWidth = progressHeight.toPx(),
                 blendMode = BlendMode.SrcIn,
                 cap = StrokeCap.Round
             )
@@ -338,7 +339,7 @@ private fun Track(
                 start = Offset(rtlAware(0f, widthPx, isRtl), center.y),
                 end = Offset(rtlAware(valuePx, widthPx, isRtl), center.y),
                 color = progressColor,
-                strokeWidth = trackHeight.toPx(),
+                strokeWidth = progressHeight.toPx(),
                 blendMode = BlendMode.SrcIn,
                 cap = StrokeCap.Round
             )
