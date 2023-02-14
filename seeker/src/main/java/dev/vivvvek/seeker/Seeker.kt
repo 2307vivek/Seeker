@@ -57,6 +57,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.inset
 import androidx.compose.ui.graphics.drawscope.rotateRad
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.graphicsLayer
@@ -356,34 +357,41 @@ private fun DrawScope.drawLine(
     endCap: StrokeCap? = null,
     blendMode: BlendMode
 ) {
-    drawLine(
-        color = color,
-        start = start,
-        end = end,
-        strokeWidth = strokeWidth,
-        cap = StrokeCap.Butt,
-    )
-
-    startCap?.let {
-        drawCap(
+    val endOffset = if (endCap != null) {
+        end.copy(x = end.x - strokeWidth)
+    } else {
+        end
+    }
+    inset(horizontal = strokeWidth / 2) {
+        drawLine(
             color = color,
             start = start,
-            end = end,
+            end = endOffset,
             strokeWidth = strokeWidth,
-            cap = it,
-            blendMode = blendMode
+            cap = StrokeCap.Butt,
         )
-    }
 
-    endCap?.let {
-        drawCap(
-            color = color,
-            start = end,
-            end = start,
-            strokeWidth = strokeWidth,
-            cap = it,
-            blendMode = blendMode
-        )
+        startCap?.let {
+            drawCap(
+                color = color,
+                start = start,
+                end = end,
+                strokeWidth = strokeWidth,
+                cap = it,
+                blendMode = blendMode
+            )
+        }
+
+        endCap?.let {
+            drawCap(
+                color = color,
+                start = endOffset,
+                end = start,
+                strokeWidth = strokeWidth,
+                cap = it,
+                blendMode = blendMode
+            )
+        }
     }
 }
 
