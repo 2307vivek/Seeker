@@ -94,6 +94,7 @@ Seeker(
 )
 ```
 
+### Observing current segment
 The current segment corresponding to the current seeker value, can be observed by using the `currentSegment` property of the `SeekerState` which can be created by using `rememberSeekerState()`.
 
 ```kotlin
