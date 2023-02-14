@@ -94,6 +94,30 @@ Seeker(
 )
 ```
 
+The current segment corresponding to the current seeker value, can be observed by using the `currentSegment` property of the `SeekerState` which can be created by using `rememberSeekerState()`.
+
+```kotlin
+val segments = listOf(
+    Segment(name = "Intro", start = 1f),
+    Segment(name = "Part 1", start = 40f),
+    Segment(name = "Part 2", start = 88f),
+)
+
+val state = rememberSeekerState()
+
+Seeker(
+    state = state,
+    value = value,
+    readAheadValue = readAheadValue,
+    range = 1f..100f,
+    segments = segments,
+    onValueChange = { value = it }
+)
+
+// observing the current segment
+Text(state.currentSegment.name)
+```
+
 ## Customizing Seeker
 Seeker is highly customizable in terms of its dimensions and colors. The `seekerColors()` and `seekerDimensions()` functions can be used to customise the colors and dimensions of the different parts of seeker.
 
