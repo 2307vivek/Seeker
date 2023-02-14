@@ -13,4 +13,34 @@ dependencies {
 }
 ```
 
-### How to use
+## How to use
+You can create a Seeker with the `Seeker` composable.
+```kotlin
+@Composable
+fun Seeker(
+    modifier: Modifier = Modifier,
+    state: SeekerState = rememberSeekerState(),
+    value: Float,
+    range: ClosedFloatingPointRange<Float> = 0f..1f,
+    readAheadValue: Float = range.start,
+    onValueChange: (Float) -> Unit,
+    onValueChangeFinished: (() -> Unit)? = null,
+    segments: List<Segment> = emptyList(),
+    enabled: Boolean = true,
+    colors: SeekerColors = SeekerDefaults.seekerColors(),
+    dimensions: SeekerDimensions = SeekerDefaults.seekerDimensions(),
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+)
+```
+
+In its simplest form **seeker** can be used as a regular slider for selecting values from a range or showing progress in a range.
+
+```kotlin
+var value by remember { mutableStateOf(0f) }
+
+Seeker(
+    value = value,
+    range = 1f..100f,
+    onValueChange = { value = it }
+)
+```
