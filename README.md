@@ -1,6 +1,9 @@
 # Seeker
 **Seeker** is a highly customisable seekbar/slider for android with support for **readahead indicator** and **segments**. Made with Jetpack Compose ❤.
 
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/2307vivek/seeker/android.yml?style=for-the-badge)](https://github.com/2307vivek/Seeker/actions)
+[![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/2307vivek/seeker/publish.yml?label=Publish&style=for-the-badge)]((https://github.com/2307vivek/Seeker/actions))
+
 ![seeker (2)](https://user-images.githubusercontent.com/67380664/218636012-ac49ae15-0f7f-4cfa-94be-0add7a9182c3.png)
 
 ## Including in your project
