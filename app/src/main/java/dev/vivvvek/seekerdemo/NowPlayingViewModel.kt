@@ -32,6 +32,9 @@ class NowPlayingViewModel : ViewModel() {
     private val _position = MutableStateFlow(0f)
     val position: StateFlow<Float> = _position
 
+    private val _readAheadPosition = MutableStateFlow(0f)
+    val readAheadPosition: StateFlow<Float> = _readAheadPosition
+
     val length = 145f
 
     val segments = listOf(
@@ -58,11 +61,16 @@ class NowPlayingViewModel : ViewModel() {
         _position.value = position
     }
 
+    fun onPositionChangeFinished() {
+        _readAheadPosition.value = _position.value
+    }
+
     private fun startPlaying() {
         job = viewModelScope.launch {
             while (_isPlaying.value && _position.value < length) {
                 delay(1000)
                 _position.value += 1f
+                _readAheadPosition.value += 4f
 
                 if (_position.value == length) {
                     _isPlaying.value = false

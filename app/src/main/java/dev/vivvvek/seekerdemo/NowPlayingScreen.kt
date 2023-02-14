@@ -18,18 +18,22 @@ package dev.vivvvek.seekerdemo
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.with
 import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.shape.CircleShape
@@ -46,6 +50,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -65,7 +70,16 @@ fun NowPlayingScreen() {
 
     val viewModel: NowPlayingViewModel = viewModel()
     val position by viewModel.position.collectAsState()
+    val readAheadPosition by viewModel.readAheadPosition.collectAsState()
     val isPlaying by viewModel.isPlaying.collectAsState()
+
+    val interactionSource = remember {
+        MutableInteractionSource()
+    }
+    val isDragging by interactionSource.collectIsDraggedAsState()
+
+    val gap by animateDpAsState(if (isDragging) 2.dp else 0.dp)
+    val thumbRadius by animateDpAsState(if (isDragging) 10.dp else 0.dp)
 
     val seekerState = rememberSeekerState()
 
@@ -119,14 +133,22 @@ fun NowPlayingScreen() {
                 Seeker(
                     value = position,
                     onValueChange = viewModel::setPosition,
+                    onValueChangeFinished = viewModel::onPositionChangeFinished,
                     range = range,
+                    readAheadValue = readAheadPosition,
                     state = seekerState,
+                    interactionSource = interactionSource,
                     segments = viewModel.segments,
                     colors = SeekerDefaults.seekerColors(
                         trackColor = Color(0xFF22233b),
+                        readAheadColor = Color(0xFF484A74),
                         progressColor = Color.White,
                         thumbColor = Color.White
-                    )
+                    ),
+//                    dimensions = SeekerDefaults.seekerDimensions(
+//                        thumbRadius = thumbRadius,
+//                        gap = gap
+//                    )
                 )
                 CurrentSegment(
                     currentSegment = seekerState.currentSegment,
@@ -202,12 +224,21 @@ fun CurrentSegment(
                 )
             }
         ) { currentSegment ->
-            CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                Text(
-                    text = currentSegment.name,
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.button
-                )
+            Row {
+                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.disabled) {
+                    Text(
+                        text = formatSeconds(currentSegment.start),
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.button
+                    )
+                }
+                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
+                    Text(
+                        text = " ${currentSegment.name}",
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.button
+                    )
+                }
             }
         }
     }
