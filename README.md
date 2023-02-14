@@ -93,3 +93,45 @@ Seeker(
     onValueChange = { value = it }
 )
 ```
+
+## Customizing Seeker
+Seeker is highly customizable in terms of its dimensions and colors. The `seekerColors()` and `seekerDimensions()` functions can be used to customise the colors and dimensions of the different parts of seeker.
+
+The `seekerColors()` and `seekerDimensions()` functions are as follows:
+
+```kotlin
+@Composable
+fun seekerColors(
+    progressColor: Color = MaterialTheme.colors.primary,
+    trackColor: Color = TrackColor,
+    disabledProgressColor: Color = MaterialTheme.colors.onSurface.copy(alpha = DisabledProgressAlpha),
+    disabledTrackColor: Color = disabledProgressColor.copy(alpha = DisabledTrackAlpha).compositeOver(MaterialTheme.colors.onSurface),
+    thumbColor: Color = MaterialTheme.colors.primary,
+    disabledThumbColor: Color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled).compositeOver(MaterialTheme.colors.surface),
+    readAheadColor: Color = ReadAheadColor
+): SeekerColors
+
+@Composable
+fun seekerDimensions(
+    trackHeight: Dp = TrackHeight,
+    progressHeight: Dp = trackHeight,
+    thumbRadius: Dp = ThumbRadius,
+    gap: Dp = Gap
+): SeekerDimensions
+```
+The seeker composable has parameters `colors` and `dimensions` which can be used to customize the colors and dimensions of the seeker respectively.
+
+```kotlin
+Seeker(
+    value = value,
+    readAheadValue = readAheadValue,
+    range = 1f..100f,
+    segments = segments,
+    colors = SeekerDefaults.colors(trackColor = customColor, thumbColor = customThumbColor, ...)
+    dimensions = SeekerDefaults.seekerDimensions(gap = 4.dp, thumbRadius = 12.dp, ...),
+    onValueChange = { value = it }
+)
+```
+> **Note**: As of the current version, unexpected behaviors are noted when colors with an alpha value less than 1f are used in the seeker. You shluld avoid using transparent colors in seeker. See issue [#12](https://github.com/2307vivek/Seeker/issues/12).
+
+The above functions are `@Composables` which means it will be recomposed when the parameters change. It can be used to animate the colors and dimensions of seeker.
