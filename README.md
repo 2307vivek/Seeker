@@ -59,3 +59,37 @@ Seeker(
     onValueChange = { value = it }
 )
 ```
+
+### Creating Segments
+Seeker can break the track into different sections, which can be used to display different parts in the range. To create segments, a list of `Segment` needs to be passed in the `Seeker` composable.
+
+```kotlin
+val segments = listOf(
+    Segment(name = "Intro", start = 1f),
+    Segment(name = "Part 1", start = 40f),
+    Segment(name = "Part 2", start = 88f),
+)
+
+Seeker(
+    value = value,
+    readAheadValue = readAheadValue,
+    range = 1f..100f,
+    segments = segments,
+    onValueChange = { value = it }
+)
+```
+The `Segment` takes the `name` and the `start` value form which the segments shlould start. You can also pass an optional color parameter to each segment.
+
+The first segment in the list **must start from the start point of the range, and all the segments must lie in the range** of the seeker, otherwise an `IllegalArgumentException` will be thrown to avoid unexpected behavior.
+
+**Segments** are by default seperated by a gap in the track, which can be customized by passing a `dimensions` parameter in the composable.
+```kotlin
+Seeker(
+    value = value,
+    readAheadValue = readAheadValue,
+    range = 1f..100f,
+    segments = segments,
+    dimensions = SeekerDefaults.seekerDimensions(gap = 4.dp),
+    onValueChange = { value = it }
+)
+```
