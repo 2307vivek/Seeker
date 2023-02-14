@@ -44,3 +44,18 @@ Seeker(
     onValueChange = { value = it }
 )
 ```
+
+### Read Ahead indicator
+A read ahead indicator shows the amount of content which is already ready to use. It is particularly useful in media streaming apps where some media is downloaded ahead of time to avoid bufferring. The `readAheadValue` property of the Seeker composable can be used to display the read ahead indicator.
+
+```kotlin
+var value by remember { mutableStateOf(0f) }
+var readAheadValue by remember { mutableStateOf(0f) }
+
+Seeker(
+    value = value,
+    readAheadValue = readAheadValue,
+    range = 1f..100f,
+    onValueChange = { value = it }
+)
+```
