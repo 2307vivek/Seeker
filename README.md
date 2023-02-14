@@ -44,6 +44,7 @@ Seeker(
     onValueChange = { value = it }
 )
 ```
+![Screenshot_20230214-232222_Seeker](https://user-images.githubusercontent.com/67380664/218842981-4495f951-acd6-4838-ba5c-4f656ac65a17.jpg)
 
 ### Read Ahead indicator
 A read ahead indicator shows the amount of content which is already ready to use. It is particularly useful in media streaming apps where some media is downloaded ahead of time to avoid bufferring. The `readAheadValue` property of the Seeker composable can be used to display the read ahead indicator.
@@ -59,6 +60,7 @@ Seeker(
     onValueChange = { value = it }
 )
 ```
+![Screenshot_20230214-232319_Seeker](https://user-images.githubusercontent.com/67380664/218843315-5002d843-613c-4174-bd77-cec67c78c8da.jpg)
 
 ### Creating Segments
 Seeker can break the track into different sections, which can be used to display different parts in the range. To create segments, a list of `Segment` needs to be passed in the `Seeker` composable.
@@ -78,6 +80,8 @@ Seeker(
     onValueChange = { value = it }
 )
 ```
+![Screenshot_20230214-232423_Seeker](https://user-images.githubusercontent.com/67380664/218843537-dcb59b6e-de88-493b-aaa1-af97126eafd0.jpg)
+
 The `Segment` takes the `name` and the `start` value form which the segments shlould start. You can also pass an optional color parameter to each segment.
 
 The first segment in the list **must start from the start point of the range, and all the segments must lie in the range** of the seeker, otherwise an `IllegalArgumentException` will be thrown to avoid unexpected behavior.
@@ -118,6 +122,7 @@ Seeker(
 // observing the current segment
 Text(state.currentSegment.name)
 ```
+![segments (online-video-cutter com) (1)](https://user-images.githubusercontent.com/67380664/218846298-f940cc90-c8f6-49f0-ba98-20137f862172.gif)
 
 ## Customizing Seeker
 Seeker is highly customizable in terms of its dimensions and colors. The `seekerColors()` and `seekerDimensions()` functions can be used to customise the colors and dimensions of the different parts of seeker.
@@ -160,6 +165,26 @@ Seeker(
 > **Note**: As of the current version, unexpected behaviors are noted when colors with an alpha value less than 1f are used in the seeker. You shluld avoid using transparent colors in seeker. See issue [#12](https://github.com/2307vivek/Seeker/issues/12).
 
 The above functions are `@Composables` which means it will be recomposed when the parameters change. It can be used to animate the colors and dimensions of seeker.
+
+```kotlin
+val interactionSource = remember { MutableInteractionSource() }
+val isDragging by interactionSource.collectIsDraggedAsState()
+
+val gap by animateDpAsState(if (isDragging) 2.dp else 0.dp)
+val thumbRadius by animateDpAsState(if (isDragging) 10.dp else 0.dp)
+
+Seeker(
+    value = value,
+    readAheadValue = readAheadValue,
+    range = 1f..100f,
+    segments = segments,
+    interactionSource = interactionSource,
+    colors = SeekerDefaults.colors(trackColor = customColor, thumbColor = customThumbColor)
+    dimensions = SeekerDefaults.seekerDimensions(gap = gap, thumbRadius = thumbRadius),
+    onValueChange = { value = it }
+)
+```
+![interactions (online-video-cutter com)](https://user-images.githubusercontent.com/67380664/218847449-abd6c63f-1e71-4708-ba12-37ce9845f9ef.gif)
 
 ## Find this library useful? :heart:
 Support it by joining __[stargazers](https://github.com/2307vivek/seeker/stargazers)__ for this repository. :star: <br>
