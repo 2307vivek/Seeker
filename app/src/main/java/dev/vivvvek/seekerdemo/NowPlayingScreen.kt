@@ -79,7 +79,7 @@ fun NowPlayingScreen() {
     val isDragging by interactionSource.collectIsDraggedAsState()
 
     val gap by animateDpAsState(if (isDragging) 2.dp else 0.dp)
-    val thumbRadius by animateDpAsState(if (isDragging) 10.dp else 0.dp)
+    val thumbRadius by animateDpAsState(if (isDragging) 12.dp else 6.dp)
 
     val seekerState = rememberSeekerState()
 
@@ -145,10 +145,10 @@ fun NowPlayingScreen() {
                         progressColor = Color.White,
                         thumbColor = Color.White
                     ),
-//                    dimensions = SeekerDefaults.seekerDimensions(
-//                        thumbRadius = thumbRadius,
-//                        gap = gap
-//                    )
+                    dimensions = SeekerDefaults.seekerDimensions(
+                        thumbRadius = thumbRadius,
+                        gap = gap
+                    )
                 )
                 CurrentSegment(
                     currentSegment = seekerState.currentSegment,

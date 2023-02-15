@@ -42,7 +42,7 @@ class NowPlayingViewModel : ViewModel() {
         Segment(name = "Talking about state", start = 22f),
         Segment(name = "Just architecture things", start = 40f),
         Segment(name = "Jetpack Compose stability", start = 57f),
-        Segment(name = "Compose Navigation is shit", start = 100f),
+        Segment(name = "Compose Navigation", start = 100f),
         Segment(name = "Composition phases", start = 123f),
         Segment(name = "Wrapping up", start = 135f),
     )
