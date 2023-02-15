@@ -125,7 +125,7 @@ Seeker(
 // observing the current segment
 Text(state.currentSegment.name)
 ```
-![segments (online-video-cutter com) (1)](https://user-images.githubusercontent.com/67380664/218846298-f940cc90-c8f6-49f0-ba98-20137f862172.gif)
+![segments-3 (online-video-cutter com)](https://user-images.githubusercontent.com/67380664/218962032-eb8ecf66-1df8-458e-9f1a-fdcd39523d9d.gif)
 
 ## Customizing Seeker
 Seeker is highly customizable in terms of its dimensions and colors. The `seekerColors()` and `seekerDimensions()` functions can be used to customise the colors and dimensions of the different parts of seeker.
@@ -187,7 +187,7 @@ Seeker(
     onValueChange = { value = it }
 )
 ```
-![interactions (online-video-cutter com)](https://user-images.githubusercontent.com/67380664/218847449-abd6c63f-1e71-4708-ba12-37ce9845f9ef.gif)
+![interactions-1 (online-video-cutter com)](https://user-images.githubusercontent.com/67380664/218961219-d2db59e5-6219-4de7-80d4-c503b163182e.gif)
 
 ## Find this library useful? :heart:
 Support it by joining __[stargazers](https://github.com/2307vivek/seeker/stargazers)__ for this repository. :star: <br>
