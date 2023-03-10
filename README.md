@@ -4,6 +4,8 @@
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/2307vivek/seeker/android.yml?style=for-the-badge)](https://github.com/2307vivek/Seeker/actions)
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/2307vivek/seeker/publish.yml?label=Publish&style=for-the-badge)]((https://github.com/2307vivek/Seeker/actions))
 
+<a href="https://jetc.dev/issues/154.html"><img src="https://img.shields.io/badge/As_Seen_In-jetc.dev_Newsletter_Issue_%23154-blue?logo=Jetpack+Compose&amp;logoColor=white" alt="Featured In - jetc.dev Newsletter Issue #154"></a>
+
 ![seeker (2)](https://user-images.githubusercontent.com/67380664/218636012-ac49ae15-0f7f-4cfa-94be-0add7a9182c3.png)
 
 ## Including in your project
