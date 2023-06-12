@@ -109,6 +109,7 @@ fun Seeker(
     modifier: Modifier = Modifier,
     state: SeekerState = rememberSeekerState(),
     value: Float,
+    thumbValue: Float = value,
     range: ClosedFloatingPointRange<Float> = 0f..1f,
     readAheadValue: Float = range.start,
     onValueChange: (Float) -> Unit,
@@ -157,12 +158,19 @@ fun Seeker(
             segmentToPxValues(segments, range, widthPx)
         }
 
-        LaunchedEffect(value, segments) {
-            state.currentSegment(value, segments)
+        LaunchedEffect(thumbValue, segments) {
+            state.currentSegment(thumbValue, segments)
         }
 
         val valuePx = remember(value, widthPx, range) {
             valueToPx(value, widthPx, range)
+        }
+
+        val thumbValuePx = remember(thumbValue, widthPx, range) {
+            when (thumbValue) {
+                value -> valuePx // reuse valuePx if thumbValue equal to value
+                else -> valueToPx(thumbValue, widthPx, range)
+            }
         }
 
         val readAheadValuePx = remember(readAheadValue, widthPx, range) {
@@ -225,6 +233,7 @@ fun Seeker(
             modifier = if (enabled) press.then(drag) else Modifier,
             widthPx = widthPx,
             valuePx = valuePx,
+            thumbValuePx = thumbValuePx,
             readAheadValuePx = readAheadValuePx,
             enabled = enabled,
             segments = segmentStarts,
@@ -240,6 +249,7 @@ private fun Seeker(
     modifier: Modifier,
     widthPx: Float,
     valuePx: Float,
+    thumbValuePx: Float,
     readAheadValuePx: Float,
     enabled: Boolean,
     segments: List<SegmentPxs>,
@@ -262,7 +272,7 @@ private fun Seeker(
             dimensions = dimensions
         )
         Thumb(
-            valuePx = { valuePx },
+            valuePx = { thumbValuePx },
             dimensions = dimensions,
             colors = colors,
             enabled = enabled,
