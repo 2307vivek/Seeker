@@ -50,9 +50,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -71,7 +69,6 @@ import dev.vivvvek.seeker.rememberSeekerState
 fun NowPlayingScreen() {
 
     val viewModel: NowPlayingViewModel = viewModel()
-    var seekPosition by remember { mutableStateOf(0f) }
     val position by viewModel.position.collectAsState()
     val readAheadPosition by viewModel.readAheadPosition.collectAsState()
     val isPlaying by viewModel.isPlaying.collectAsState()
@@ -135,14 +132,8 @@ fun NowPlayingScreen() {
                 }
                 Seeker(
                     value = position,
-                    thumbValue = if (isDragging) seekPosition else position,
-                    onValueChange = { value ->
-                        seekPosition = value
-                    },
-                    onValueChangeFinished = {
-                        viewModel.setPosition(seekPosition)
-                        viewModel.onPositionChangeFinished()
-                    },
+                    onValueChange = viewModel::setPosition,
+                    onValueChangeFinished = viewModel::onPositionChangeFinished,
                     range = range,
                     readAheadValue = readAheadPosition,
                     state = seekerState,
