@@ -83,6 +83,8 @@ import kotlin.math.atan2
  * @param state state for Seeker
  * @param value current value of the seeker. If outside of [range] provided, value will be
  * coerced to this range.
+ * @param thumbValue current value of the thumb. This allows the thumb to move independent of the
+ * progress position. If outside of [range] provided, value will be coerced to this range.
  * @param readAheadValue the read ahead value for seeker. If outside of [range] provided, value will be
  * coerced to this range.
  * @param onValueChange lambda in which value should be updated
