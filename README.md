@@ -191,6 +191,28 @@ Seeker(
 ```
 ![interactions-1 (online-video-cutter com)](https://user-images.githubusercontent.com/67380664/218961219-d2db59e5-6219-4de7-80d4-c503b163182e.gif)
 
+### Using different value for thumb
+Seeker has the ability to provide a seperate value for the thumb, which makes it possible to move the thumb independent of the progress.
+```kotlin
+val position by viewModel.position.collectAsState()
+var thumbPosition by remember{ mutableStateOf(0f) }
+
+val isDragging by interactionSource.collectIsDraggedAsState()
+
+Seeker(
+    value = value,
+    thumbValue = if (isDragging) thumbPosition else position,
+    onValueChange = { thumbPosition = it },
+    onValueChangeFinished = { value = thumbPosition },
+    readAheadValue = readAheadValue,
+    interactionSource = interactionSource,
+    range = 1f..100f,
+    ...
+)
+```
+![f4d2d702-68c4-4ebb-8dd5-40f5996aa37f](https://github.com/2307vivek/Seeker/assets/67380664/3a72c58e-f3b7-4039-b0e0-57aa2e419df4)
+
+
 ## Find this library useful? :heart:
 Support it by joining __[stargazers](https://github.com/2307vivek/seeker/stargazers)__ for this repository. :star: <br>
 Also, follow me on __[github](https://github.com/2307vivek)__ and __[twitter](https://twitter.com/2307vivek)__ to stay updated with my creations! 🤩
