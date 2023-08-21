@@ -65,10 +65,8 @@ import dev.vivvvek.seeker.Segment
 import dev.vivvvek.seeker.rememberSeekerState
 import dev.vivvvek.seekerdemo.ui.theme.SeekerTheme
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun NowPlayingScreen() {
-
     val viewModel: NowPlayingViewModel = viewModel()
     val position by viewModel.position.collectAsState()
     val readAheadPosition by viewModel.readAheadPosition.collectAsState()
