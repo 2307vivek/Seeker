@@ -79,8 +79,8 @@ fun NowPlayingScreen() {
     }
     val isDragging by interactionSource.collectIsDraggedAsState()
 
-    val gap by animateDpAsState(if (isDragging) 2.dp else 0.dp)
-    val thumbRadius by animateDpAsState(if (isDragging) 12.dp else 6.dp)
+    val gap by animateDpAsState(if (isDragging) 2.dp else 0.dp, label = "gap")
+    val thumbRadius by animateDpAsState(if (isDragging) 12.dp else 6.dp, label = "thumb radius")
 
     val seekerState = rememberSeekerState()
 
@@ -231,7 +231,8 @@ fun CurrentSegment(
                 }.using(
                     SizeTransform(clip = false)
                 )
-            }
+            },
+            label = "segment",
         ) { currentSegment ->
             Row {
                 CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.disabled) {
