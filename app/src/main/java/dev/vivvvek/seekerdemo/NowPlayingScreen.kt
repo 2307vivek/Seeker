@@ -63,11 +63,10 @@ import dev.vivvvek.seeker.Seeker
 import dev.vivvvek.seeker.SeekerDefaults
 import dev.vivvvek.seeker.Segment
 import dev.vivvvek.seeker.rememberSeekerState
+import dev.vivvvek.seekerdemo.ui.theme.SeekerTheme
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun NowPlayingScreen() {
-
     val viewModel: NowPlayingViewModel = viewModel()
     val position by viewModel.position.collectAsState()
     val readAheadPosition by viewModel.readAheadPosition.collectAsState()
@@ -78,8 +77,8 @@ fun NowPlayingScreen() {
     }
     val isDragging by interactionSource.collectIsDraggedAsState()
 
-    val gap by animateDpAsState(if (isDragging) 2.dp else 0.dp)
-    val thumbRadius by animateDpAsState(if (isDragging) 12.dp else 6.dp)
+    val gap by animateDpAsState(if (isDragging) 2.dp else 0.dp, label = "gap")
+    val thumbRadius by animateDpAsState(if (isDragging) 12.dp else 6.dp, label = "thumb radius")
 
     val seekerState = rememberSeekerState()
 
@@ -94,7 +93,7 @@ fun NowPlayingScreen() {
         ) {
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .weight(2f)
                     .aspectRatio(1f)
                     .padding(56.dp)
                     .background(
@@ -161,7 +160,14 @@ fun NowPlayingScreen() {
                         .padding(24.dp)
                 )
             }
-            Controls(isPlaying = isPlaying, onPlayPause = { viewModel.playOrPause() })
+            Controls(
+                isPlaying = isPlaying,
+                onPlayPause = { viewModel.playOrPause() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .padding(top = 16.dp, bottom = 32.dp),
+            )
         }
     }
 }
@@ -169,10 +175,11 @@ fun NowPlayingScreen() {
 @Composable
 fun Controls(
     isPlaying: Boolean,
-    onPlayPause: () -> Unit
+    onPlayPause: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier,
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -222,7 +229,8 @@ fun CurrentSegment(
                 }.using(
                     SizeTransform(clip = false)
                 )
-            }
+            },
+            label = "segment",
         ) { currentSegment ->
             Row {
                 CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.disabled) {
@@ -283,5 +291,7 @@ fun formatSeconds(seconds: Float): String {
 @Preview(showBackground = true)
 @Composable
 fun PreView() {
-    NowPlayingScreen()
+    SeekerTheme {
+        NowPlayingScreen()
+    }
 }
