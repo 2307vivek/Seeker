@@ -63,6 +63,7 @@ import dev.vivvvek.seeker.Seeker
 import dev.vivvvek.seeker.SeekerDefaults
 import dev.vivvvek.seeker.Segment
 import dev.vivvvek.seeker.rememberSeekerState
+import dev.vivvvek.seekerdemo.ui.theme.SeekerTheme
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -283,5 +284,7 @@ fun formatSeconds(seconds: Float): String {
 @Preview(showBackground = true)
 @Composable
 fun PreView() {
-    NowPlayingScreen()
+    SeekerTheme {
+        NowPlayingScreen()
+    }
 }
