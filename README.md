@@ -194,14 +194,14 @@ Seeker(
 ### Using different value for thumb
 Seeker has the ability to provide a seperate value for the thumb, which makes it possible to move the thumb independent of the progress.
 ```kotlin
-val position by viewModel.position.collectAsState()
+var value by remember{ mutableStateOf(0f) }
 var thumbPosition by remember{ mutableStateOf(0f) }
 
 val isDragging by interactionSource.collectIsDraggedAsState()
 
 Seeker(
     value = value,
-    thumbValue = if (isDragging) thumbPosition else position,
+    thumbValue = if (isDragging) thumbPosition else value,
     onValueChange = { thumbPosition = it },
     onValueChangeFinished = { value = thumbPosition },
     readAheadValue = readAheadValue,
