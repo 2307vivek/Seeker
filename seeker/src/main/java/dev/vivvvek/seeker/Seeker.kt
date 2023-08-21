@@ -215,8 +215,8 @@ fun Seeker(
                             draggableState.drag(MutatePriority.UserInput) {
                                 dragBy(0f)
                             }
+                            onValueChangeFinished?.invoke()
                         }
-                        onValueChangeFinished?.invoke()
                     }
                 )
             }
