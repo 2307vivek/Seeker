@@ -321,13 +321,17 @@ private fun Track(
                     cap = StrokeCap.Round
                 )
             } else {
-                // draw segments
-                segments.forEachIndexed { index, it ->
-                    val segmentColor = if (it.color == Color.Unspecified) trackColor else it.color
-                    val segmentEnd = if (index != segments.lastIndex) it.endPx - segmentGap.toPx() else it.endPx
+                // draw segments in their respective color,
+                // excluding gaps (which will be cleared out later)
+                for (index in segments.indices) {
+                    val segment = segments[index]
+                    val segmentColor = when (segment.color) {
+                        Color.Unspecified -> trackColor
+                        else -> segment.color
+                    }
                     drawSegment(
-                        startPx = rtlAware(it.startPx, widthPx, isRtl),
-                        endPx = rtlAware(segmentEnd, widthPx, isRtl),
+                        startPx = rtlAware(segment.startPx, widthPx, isRtl),
+                        endPx = rtlAware(segment.endPx, widthPx, isRtl),
                         trackColor = segmentColor,
                         trackHeight = trackHeight.toPx(),
                         blendMode = BlendMode.SrcOver,
@@ -343,7 +347,6 @@ private fun Track(
                 end = Offset(rtlAware(readAheadValuePx, widthPx, isRtl), center.y),
                 color = readAheadColor,
                 strokeWidth = progressHeight.toPx(),
-                blendMode = BlendMode.SrcIn,
                 cap = StrokeCap.Round
             )
 
@@ -353,9 +356,19 @@ private fun Track(
                 end = Offset(rtlAware(valuePx, widthPx, isRtl), center.y),
                 color = progressColor,
                 strokeWidth = progressHeight.toPx(),
-                blendMode = BlendMode.SrcIn,
                 cap = StrokeCap.Round
             )
+
+            // clear segment gaps
+            for (index in segments.indices) {
+                if (index == segments.lastIndex) break // skip "gap" after last segment
+                val segment = segments[index]
+                drawGap(
+                    startPx = rtlAware(segment.endPx - segmentGap.toPx(), widthPx, isRtl),
+                    endPx = rtlAware(segment.endPx, widthPx, isRtl),
+                    trackHeight = trackHeight.toPx(),
+                )
+            }
         }
     }
 }
@@ -451,6 +464,20 @@ private fun DrawScope.drawSegment(
         blendMode = blendMode,
         endCap = endCap,
         startCap = startCap
+    )
+}
+
+private fun DrawScope.drawGap(
+    startPx: Float,
+    endPx: Float,
+    trackHeight: Float,
+) {
+    drawLine(
+        start = Offset(startPx, center.y),
+        end = Offset(endPx, center.y),
+        color = Color.Black, // any color will do
+        strokeWidth = trackHeight + 2, // add 2 to prevent hairline borders from rounding
+        blendMode = BlendMode.Clear
     )
 }
 
