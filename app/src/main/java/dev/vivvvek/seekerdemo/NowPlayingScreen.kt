@@ -33,7 +33,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.shape.CircleShape
@@ -122,9 +121,9 @@ fun NowPlayingScreen() {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                        Text(formatSeconds(position), style = MaterialTheme.typography.caption)
+                        Text(formatSeconds(position.toInt()), style = MaterialTheme.typography.caption)
                         Text(
-                            formatSeconds(viewModel.length),
+                            formatSeconds(viewModel.length.toInt()),
                             style = MaterialTheme.typography.caption
                         )
                     }
@@ -235,7 +234,7 @@ fun CurrentSegment(
             Row {
                 CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.disabled) {
                     Text(
-                        text = formatSeconds(currentSegment.start),
+                        text = formatSeconds(currentSegment.start.toInt()),
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.button
                     )
@@ -282,10 +281,8 @@ fun TopBar() {
     )
 }
 
-fun formatSeconds(seconds: Float): String {
-    val minutes = (seconds / 60).toInt()
-    val remaining = (seconds % 60).toInt()
-    return "$minutes:$remaining"
+fun formatSeconds(seconds: Int): String {
+    return "%d:%02d".format(seconds / 60, seconds % 60)
 }
 
 @Preview(showBackground = true)
