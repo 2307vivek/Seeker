@@ -95,7 +95,7 @@ fun NowPlayingScreen() {
         ) {
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .weight(2f)
                     .aspectRatio(1f)
                     .padding(56.dp)
                     .background(
@@ -162,7 +162,14 @@ fun NowPlayingScreen() {
                         .padding(24.dp)
                 )
             }
-            Controls(isPlaying = isPlaying, onPlayPause = { viewModel.playOrPause() })
+            Controls(
+                isPlaying = isPlaying,
+                onPlayPause = { viewModel.playOrPause() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .padding(top = 16.dp, bottom = 32.dp),
+            )
         }
     }
 }
@@ -170,10 +177,11 @@ fun NowPlayingScreen() {
 @Composable
 fun Controls(
     isPlaying: Boolean,
-    onPlayPause: () -> Unit
+    onPlayPause: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier,
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
     ) {
