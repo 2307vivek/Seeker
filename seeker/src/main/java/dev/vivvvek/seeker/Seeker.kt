@@ -431,7 +431,15 @@ private fun DrawScope.drawCap(
     when (cap) {
         StrokeCap.Butt -> Unit
         StrokeCap.Round -> {
-            drawCircle(color, center = start, radius = strokeWidth / 2, blendMode = blendMode)
+            drawArc(
+                color = color,
+                startAngle = -90f,
+                sweepAngle = 180f,
+                useCenter = true,
+                topLeft = start - Offset(strokeWidth / 2, strokeWidth / 2),
+                size = Size(strokeWidth, strokeWidth),
+                blendMode = blendMode,
+            )
         }
         StrokeCap.Square -> {
             val offset = Offset(strokeWidth / 2, strokeWidth / 2)
