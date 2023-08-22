@@ -14,7 +14,7 @@
 Add the dependency below to your **module**'s `build.gradle` file:
 ```gradle
 dependencies {
-    implementation 'io.github.2307vivek:seeker:1.1.1'
+    implementation 'io.github.2307vivek:seeker:1.2.1'
 }
 ```
 
