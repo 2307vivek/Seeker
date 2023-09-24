@@ -13,11 +13,11 @@ apply from: "${rootProject.projectDir}/scripts/publish-module.gradle"
 
 android {
     namespace 'dev.vivvvek.seeker'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         minSdk 21
-        targetSdk 33
+        targetSdk 34
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
@@ -37,7 +37,7 @@ android {
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion '1.4.0'
+        kotlinCompilerExtensionVersion '1.5.2'
     }
     kotlinOptions {
         jvmTarget = '1.8'
