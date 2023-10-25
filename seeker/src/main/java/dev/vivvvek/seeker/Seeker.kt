@@ -15,6 +15,7 @@
  */
 package dev.vivvvek.seeker
 
+import androidx.annotation.FloatRange
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.MutatePriority
 import androidx.compose.foundation.background
@@ -85,6 +86,8 @@ import kotlin.math.atan2
  * coerced to this range.
  * @param thumbValue current value of the thumb. This allows the thumb to move independent of the
  * progress position. If outside of [range] provided, value will be coerced to this range.
+ * @param indicatorStartFraction starting point of the indicator as a fraction of track width.
+ * The passed value will be clamped between 0 and 1.
  * @param readAheadValue the read ahead value for seeker. If outside of [range] provided, value will be
  * coerced to this range.
  * @param onValueChange lambda in which value should be updated
@@ -113,7 +116,9 @@ fun Seeker(
     value: Float,
     thumbValue: Float = value,
     range: ClosedFloatingPointRange<Float> = 0f..1f,
-    readAheadValue: Float = range.start,
+    @FloatRange(from = 0.0, to = 1.0)
+    indicatorStartFraction: Float = 0f,
+    readAheadValue: Float = lerp(range.start, range.endInclusive, indicatorStartFraction),
     onValueChange: (Float) -> Unit,
     onValueChangeFinished: (() -> Unit)? = null,
     segments: List<Segment> = emptyList(),
@@ -236,6 +241,7 @@ fun Seeker(
             widthPx = widthPx,
             valuePx = valuePx,
             thumbValuePx = thumbValuePx,
+            indicatorStartFraction = indicatorStartFraction.coerceIn(0f, 1f),
             readAheadValuePx = readAheadValuePx,
             enabled = enabled,
             segments = segmentStarts,
@@ -252,6 +258,7 @@ private fun Seeker(
     widthPx: Float,
     valuePx: Float,
     thumbValuePx: Float,
+    indicatorStartFraction: Float,
     readAheadValuePx: Float,
     enabled: Boolean,
     segments: List<SegmentPxs>,
@@ -270,6 +277,7 @@ private fun Seeker(
             colors = colors,
             widthPx = widthPx,
             valuePx = valuePx,
+            indicatorStartFraction = indicatorStartFraction,
             readAheadValuePx = readAheadValuePx,
             dimensions = dimensions
         )
@@ -291,6 +299,7 @@ private fun Track(
     colors: SeekerColors,
     widthPx: Float,
     valuePx: Float,
+    indicatorStartFraction: Float,
     readAheadValuePx: Float,
     dimensions: SeekerDimensions
 ) {
@@ -343,7 +352,7 @@ private fun Track(
 
             // readAhead indicator
             drawLine(
-                start = Offset(rtlAware(0f, widthPx, isRtl), center.y),
+                start = Offset(rtlAware(widthPx * indicatorStartFraction, widthPx, isRtl), center.y),
                 end = Offset(rtlAware(readAheadValuePx, widthPx, isRtl), center.y),
                 color = readAheadColor,
                 strokeWidth = progressHeight.toPx(),
@@ -352,7 +361,7 @@ private fun Track(
 
             // progress indicator
             drawLine(
-                start = Offset(rtlAware(0f, widthPx, isRtl), center.y),
+                start = Offset(rtlAware(widthPx * indicatorStartFraction, widthPx, isRtl), center.y),
                 end = Offset(rtlAware(valuePx, widthPx, isRtl), center.y),
                 color = progressColor,
                 strokeWidth = progressHeight.toPx(),
