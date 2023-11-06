@@ -86,7 +86,7 @@ import kotlin.math.atan2
  * coerced to this range.
  * @param thumbValue current value of the thumb. This allows the thumb to move independent of the
  * progress position. If outside of [range] provided, value will be coerced to this range.
- * @param indicatorStartFraction starting point of the indicator as a fraction of track width.
+ * @param progressStartPosition starting point of the indicator as a fraction of track width.
  * The passed value will be clamped between 0 and 1.
  * @param readAheadValue the read ahead value for seeker. If outside of [range] provided, value will be
  * coerced to this range.
@@ -117,8 +117,8 @@ fun Seeker(
     thumbValue: Float = value,
     range: ClosedFloatingPointRange<Float> = 0f..1f,
     @FloatRange(from = 0.0, to = 1.0)
-    indicatorStartFraction: Float = 0f,
-    readAheadValue: Float = lerp(range.start, range.endInclusive, indicatorStartFraction),
+    progressStartPosition: Float = 0f,
+    readAheadValue: Float = lerp(range.start, range.endInclusive, progressStartPosition),
     onValueChange: (Float) -> Unit,
     onValueChangeFinished: (() -> Unit)? = null,
     segments: List<Segment> = emptyList(),
@@ -241,7 +241,7 @@ fun Seeker(
             widthPx = widthPx,
             valuePx = valuePx,
             thumbValuePx = thumbValuePx,
-            indicatorStartFraction = indicatorStartFraction.coerceIn(0f, 1f),
+            progressStartPosition = progressStartPosition.coerceIn(0f, 1f),
             readAheadValuePx = readAheadValuePx,
             enabled = enabled,
             segments = segmentStarts,
@@ -258,7 +258,7 @@ private fun Seeker(
     widthPx: Float,
     valuePx: Float,
     thumbValuePx: Float,
-    indicatorStartFraction: Float,
+    progressStartPosition: Float,
     readAheadValuePx: Float,
     enabled: Boolean,
     segments: List<SegmentPxs>,
@@ -277,7 +277,7 @@ private fun Seeker(
             colors = colors,
             widthPx = widthPx,
             valuePx = valuePx,
-            indicatorStartFraction = indicatorStartFraction,
+            progressStartPosition = progressStartPosition,
             readAheadValuePx = readAheadValuePx,
             dimensions = dimensions
         )
@@ -299,7 +299,7 @@ private fun Track(
     colors: SeekerColors,
     widthPx: Float,
     valuePx: Float,
-    indicatorStartFraction: Float,
+    progressStartPosition: Float,
     readAheadValuePx: Float,
     dimensions: SeekerDimensions
 ) {
@@ -352,7 +352,7 @@ private fun Track(
 
             // readAhead indicator
             drawLine(
-                start = Offset(rtlAware(widthPx * indicatorStartFraction, widthPx, isRtl), center.y),
+                start = Offset(rtlAware(widthPx * progressStartPosition, widthPx, isRtl), center.y),
                 end = Offset(rtlAware(readAheadValuePx, widthPx, isRtl), center.y),
                 color = readAheadColor,
                 strokeWidth = progressHeight.toPx(),
@@ -361,7 +361,7 @@ private fun Track(
 
             // progress indicator
             drawLine(
-                start = Offset(rtlAware(widthPx * indicatorStartFraction, widthPx, isRtl), center.y),
+                start = Offset(rtlAware(widthPx * progressStartPosition, widthPx, isRtl), center.y),
                 end = Offset(rtlAware(valuePx, widthPx, isRtl), center.y),
                 color = progressColor,
                 strokeWidth = progressHeight.toPx(),
