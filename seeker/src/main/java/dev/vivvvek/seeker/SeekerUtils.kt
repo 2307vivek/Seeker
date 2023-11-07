@@ -72,3 +72,7 @@ internal fun segmentToPxValues(
 
 internal fun rtlAware(value: Float, widthPx: Float, isRtl: Boolean) =
     if (isRtl) widthPx - value else value
+
+internal fun lerp(start: Float, end: Float, fraction: Float): Float {
+    return (1 - fraction) * start + fraction * end
+}
