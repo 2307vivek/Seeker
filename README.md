@@ -1,5 +1,5 @@
 # Seeker
-**Seeker** is a highly customisable seekbar/slider for android with support for **readahead indicator** and **segments**. Made with Jetpack Compose ❤.
+**Seeker** is a highly customizable seekbar/slider for Android with support for **readahead indicator** and **segments**. Made with Jetpack Compose ❤.
 
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/2307vivek/seeker/android.yml?style=for-the-badge)](https://github.com/2307vivek/Seeker/actions)
 [![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/2307vivek/seeker/publish.yml?label=Publish&style=for-the-badge)]((https://github.com/2307vivek/Seeker/actions))
@@ -52,7 +52,7 @@ Seeker(
 ![Screenshot_20230214-232222_Seeker](https://user-images.githubusercontent.com/67380664/218842981-4495f951-acd6-4838-ba5c-4f656ac65a17.jpg)
 
 ### Read Ahead indicator
-A read ahead indicator shows the amount of content which is already ready to use. It is particularly useful in media streaming apps where some media is downloaded ahead of time to avoid bufferring. The `readAheadValue` property of the Seeker composable can be used to display the read ahead indicator.
+A read-ahead indicator shows the amount of content that is already ready to use. It is particularly useful in media streaming apps where some media is downloaded ahead of time to avoid buffering. The `readAheadValue` property of the Seeker composable can be used to display the read ahead indicator.
 
 ```kotlin
 var value by remember { mutableStateOf(0f) }
@@ -91,7 +91,7 @@ The `Segment` takes the `name` and the `start` value form which the segments shl
 
 The first segment in the list **must start from the start point of the range, and all the segments must lie in the range** of the seeker, otherwise an `IllegalArgumentException` will be thrown to avoid unexpected behavior.
 
-**Segments** are by default seperated by a gap in the track, which can be customized by passing a `dimensions` parameter in the composable.
+**Segments** are by default separated by a gap in the track, which can be customized by passing a `dimensions` parameter in the composable.
 ```kotlin
 Seeker(
     value = value,
@@ -104,7 +104,7 @@ Seeker(
 ```
 
 ### Observing current segment
-The current segment corresponding to the current seeker value, can be observed by using the `currentSegment` property of the `SeekerState` which can be created by using `rememberSeekerState()`.
+The current segment corresponding to the current seeker value can be observed by using the `currentSegment` property of the `SeekerState` which can be created by using `rememberSeekerState()`.
 
 ```kotlin
 val segments = listOf(
@@ -124,7 +124,7 @@ Seeker(
     onValueChange = { value = it }
 )
 
-// observing the current segment
+//Observing the current segment
 Text(state.currentSegment.name)
 ```
 ![segments-3 (online-video-cutter com)](https://user-images.githubusercontent.com/67380664/218962032-eb8ecf66-1df8-458e-9f1a-fdcd39523d9d.gif)
@@ -192,7 +192,7 @@ Seeker(
 ![interactions-1 (online-video-cutter com)](https://user-images.githubusercontent.com/67380664/218961219-d2db59e5-6219-4de7-80d4-c503b163182e.gif)
 
 ### Using different value for thumb
-Seeker has the ability to provide a seperate value for the thumb, which makes it possible to move the thumb independent of the progress.
+Seeker has the ability to provide a separate value for the thumb, which makes it possible to move the thumb independently of the progress.
 ```kotlin
 var value by remember{ mutableStateOf(0f) }
 var thumbPosition by remember{ mutableStateOf(0f) }
@@ -212,6 +212,19 @@ Seeker(
 ```
 ![f4d2d702-68c4-4ebb-8dd5-40f5996aa37f](https://github.com/2307vivek/Seeker/assets/67380664/3a72c58e-f3b7-4039-b0e0-57aa2e419df4)
 
+### Making two-way Seeker
+You can also make a two-way slider by providing the start position as a fraction of the track width using the `progressStartPosition` parameter.
+```kotlin
+var value by remember { mutableStateOf(0f) }
+
+Seeker(
+    value = value,
+    progressStartPosition = 0.3f,
+    range = 1f..100f,
+    onValueChange = { value = it }
+)
+```
+![Screenshot_20231127_135354_Seeker~2](https://github.com/2307vivek/Seeker/assets/67380664/43566c3d-05c9-42ed-a51f-213ee4a8ca1a)
 
 ## Find this library useful? :heart:
 Support it by joining __[stargazers](https://github.com/2307vivek/seeker/stargazers)__ for this repository. :star: <br>
