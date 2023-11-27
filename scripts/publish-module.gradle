@@ -68,7 +68,6 @@ afterEvaluate {
                         url = 'https://github.com/2307vivek/Seeker/tree/main'
                     }
                 }
-                generateMetadataFileForReleasePublication.dependsOn androidSourcesJar
             }
         }
     }
