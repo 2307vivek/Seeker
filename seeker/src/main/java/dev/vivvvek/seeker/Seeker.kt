@@ -169,7 +169,7 @@ fun Seeker(
             segmentToPxValues(segments, range, widthPx)
         }
 
-        if(segmentChangeHapticFeedback) {
+        if (segmentChangeHapticFeedback) {
             val haptics = LocalHapticFeedback.current
 
             LaunchedEffect(state.currentSegment) {
