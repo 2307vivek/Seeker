@@ -12,7 +12,7 @@
         android:theme="@style/Theme.Seeker"
         tools:targetApi="31">
         <activity
-            android:name="dev.vivvvek.seekerdemo.MainActivity"
+            android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.Seeker">

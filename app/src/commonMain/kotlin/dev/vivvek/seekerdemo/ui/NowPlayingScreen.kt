@@ -57,16 +57,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.vivvvek.seeker.Seeker
 import dev.vivvvek.seeker.SeekerDefaults
 import dev.vivvvek.seeker.Segment
 import dev.vivvvek.seeker.rememberSeekerState
-import dev.vivvvek.seekerdemo.ui.theme.SeekerTheme
+import dev.vivvek.seekerdemo.ui.theme.SeekerTheme
 
 @Composable
 fun NowPlayingScreen() {
-    val viewModel: NowPlayingViewModel = viewModel()
+    val viewModel = NowPlayingViewModel()
     val position by viewModel.position.collectAsState()
     val readAheadPosition by viewModel.readAheadPosition.collectAsState()
     val isPlaying by viewModel.isPlaying.collectAsState()

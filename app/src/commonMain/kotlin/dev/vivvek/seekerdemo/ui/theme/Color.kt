@@ -13,20 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package dev.vivvvek.seekerdemo
+package dev.vivvek.seekerdemo.ui.theme
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import dev.vivvvek.seekerdemo.ui.theme.SeekerTheme
+import androidx.compose.ui.graphics.Color
 
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            SeekerTheme {
-                NowPlayingScreen()
-            }
-        }
-    }
-}
+val Purple200 = Color(0xFFBB86FC)
+val Purple500 = Color(0xFF6200EE)
+val Purple700 = Color(0xFF3700B3)
+val Teal200 = Color(0xFF03DAC5)

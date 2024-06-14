@@ -1,11 +1,15 @@
 plugins {
     id("com.android.application")
-    id("org.jetbrains.kotlin.android")
+    kotlin("multiplatform")
+    kotlin("plugin.compose")
+    id("org.jetbrains.compose")
 }
 
 android {
     namespace = "dev.vivvvek.seekerdemo"
     compileSdk = 34
+
+    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
 
     defaultConfig {
         applicationId = "dev.vivvvek.seekerdemo"
@@ -33,9 +37,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    kotlinOptions {
-        jvmTarget = "17"
-    }
     buildFeatures {
         compose = true
     }
@@ -49,19 +50,39 @@ android {
     }
 }
 
+kotlin {
+    androidTarget()
+
+    sourceSets {
+        androidMain{
+            dependsOn(commonMain.get())
+            dependencies {
+                implementation("androidx.activity:activity-compose:1.7.2")
+                implementation("androidx.compose.material:material:1.5.1")
+            }
+        }
+        val commonMain by getting
+        commonMain.dependencies {
+            implementation(project(":seeker"))
+
+            implementation(compose.material)
+            implementation(compose.ui)
+            implementation(compose.preview)
+
+            implementation(compose.uiTooling)
+            implementation(compose.uiUtil)
+
+            val mokoMvvm = "0.16.1"
+            api("dev.icerock.moko:mvvm-core:$mokoMvvm")
+            api("dev.icerock.moko:mvvm-compose:$mokoMvvm")
+            api("dev.icerock.moko:mvvm-flow-compose:$mokoMvvm")
+        }
+    }
+}
+
 val compose_ui_version: String by extra
 
 dependencies {
-
-    implementation(project(":seeker"))
-
-    implementation("androidx.core:core-ktx:1.12.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
-    implementation("androidx.activity:activity-compose:1.7.2")
-    implementation("androidx.compose.ui:ui:$compose_ui_version")
-    implementation("androidx.compose.ui:ui-tooling-preview:$compose_ui_version")
-    implementation("androidx.compose.material:material:1.5.1")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")

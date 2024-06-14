@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package dev.vivvvek.seekerdemo.ui.theme
+package dev.vivvek.seekerdemo.ui.theme
 
 import androidx.compose.material.Typography
 import androidx.compose.ui.text.TextStyle

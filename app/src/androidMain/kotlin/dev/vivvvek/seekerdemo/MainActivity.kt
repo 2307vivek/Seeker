@@ -13,14 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package dev.vivvvek.seekerdemo.ui.theme
+package dev.vivvvek.seekerdemo
 
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Shapes
-import androidx.compose.ui.unit.dp
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import dev.vivvek.seekerdemo.ui.theme.SeekerTheme
 
-val Shapes = Shapes(
-    small = RoundedCornerShape(4.dp),
-    medium = RoundedCornerShape(4.dp),
-    large = RoundedCornerShape(0.dp)
-)
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            SeekerTheme {
+                NowPlayingScreen()
+            }
+        }
+    }
+}

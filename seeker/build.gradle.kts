@@ -1,6 +1,8 @@
 plugins {
     id("com.android.library")
-    id("org.jetbrains.kotlin.android")
+    kotlin("multiplatform")
+    kotlin("plugin.compose")
+    id("org.jetbrains.compose")
 }
 
 extra["PUBLISH_GROUP_ID"] = "io.github.2307vivek"
@@ -31,8 +33,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     buildFeatures {
         compose = true
@@ -40,19 +42,22 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.2"
     }
-    kotlinOptions {
-        jvmTarget = "1.8"
+}
+
+kotlin {
+    androidTarget()
+
+    sourceSets {
+        val commonMain by getting
+        commonMain.dependencies {
+            implementation(compose.material)
+            implementation(compose.uiTooling)
+        }
     }
 }
 
 val compose_ui_version: String by extra
 dependencies {
-
-    implementation("androidx.core:core-ktx:1.12.0")
-
-    implementation("androidx.compose.material:material:1.5.1")
-
-    implementation("androidx.compose.ui:ui-tooling:$compose_ui_version")
     debugImplementation("androidx.compose.ui:ui-test-manifest:$compose_ui_version")
 
     testImplementation("junit:junit:4.13.2")
