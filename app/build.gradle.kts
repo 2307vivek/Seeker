@@ -53,30 +53,48 @@ android {
 kotlin {
     androidTarget()
 
-    sourceSets {
-        androidMain{
-            dependsOn(commonMain.get())
-            dependencies {
-                implementation("androidx.activity:activity-compose:1.7.2")
-                implementation("androidx.compose.material:material:1.5.1")
-            }
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64(),
+    ).forEach { iosTarget ->
+        iosTarget.binaries.framework {
+            baseName = "app"
+            isStatic = true
         }
+    }
+
+    sourceSets {
         val commonMain by getting
         commonMain.dependencies {
             implementation(project(":seeker"))
 
             implementation(compose.material)
             implementation(compose.ui)
-            implementation(compose.preview)
-
-            implementation(compose.uiTooling)
-            implementation(compose.uiUtil)
+            implementation(compose.components.resources)
 
             val mokoMvvm = "0.16.1"
             api("dev.icerock.moko:mvvm-core:$mokoMvvm")
             api("dev.icerock.moko:mvvm-compose:$mokoMvvm")
             api("dev.icerock.moko:mvvm-flow-compose:$mokoMvvm")
         }
+        androidMain {
+            dependsOn(commonMain)
+            dependencies {
+                implementation("androidx.activity:activity-compose:1.7.2")
+                implementation("androidx.compose.material:material:1.5.1")
+                implementation(compose.preview)
+            }
+        }
+        val iosX64Main by getting
+        val iosArm64Main by getting
+        val iosSimulatorArm64Main by getting
+        val iosMain by creating {
+            iosX64Main.dependsOn(this)
+            iosArm64Main.dependsOn(this)
+            iosSimulatorArm64Main.dependsOn(this)
+        }
+        iosMain.dependsOn(commonMain)
     }
 }
 

@@ -18,7 +18,7 @@ package dev.vivvvek.seekerdemo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import dev.vivvek.seekerdemo.ui.theme.SeekerTheme
+import dev.vivvvek.seekerdemo.ui.theme.SeekerTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

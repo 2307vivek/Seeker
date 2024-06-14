@@ -16,14 +16,13 @@
 package dev.vivvvek.seekerdemo
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.with
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsDraggedAsState
@@ -53,15 +52,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.vivvvek.seeker.Seeker
 import dev.vivvvek.seeker.SeekerDefaults
 import dev.vivvvek.seeker.Segment
 import dev.vivvvek.seeker.rememberSeekerState
-import dev.vivvek.seekerdemo.ui.theme.SeekerTheme
+import org.jetbrains.compose.resources.painterResource
+import seeker.app.generated.resources.Res
+import seeker.app.generated.resources.baseline_more_vert_24
+import seeker.app.generated.resources.round_keyboard_arrow_down_24
+import seeker.app.generated.resources.round_play_arrow_24
+import seeker.app.generated.resources.round_skip_next_24
+import seeker.app.generated.resources.round_skip_previous_24
 
 @Composable
 fun NowPlayingScreen() {
@@ -182,7 +185,7 @@ fun Controls(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         IconButton(onClick = { /*TODO*/ }) {
-            Icon(painter = painterResource(id = R.drawable.round_skip_previous_24), contentDescription = "")
+            Icon(painter = painterResource(resource = Res.drawable.round_skip_previous_24), contentDescription = "")
         }
         IconButton(
             onClick = onPlayPause,
@@ -196,19 +199,18 @@ fun Controls(
         ) {
             Icon(
                 painter = painterResource(
-                    id = if (isPlaying) R.drawable.round_pause_24 else R.drawable.round_play_arrow_24
+                    resource = if (isPlaying) Res.drawable.round_skip_next_24 else Res.drawable.round_play_arrow_24
                 ),
                 contentDescription = "",
                 tint = Color.Black
             )
         }
         IconButton(onClick = { /*TODO*/ }) {
-            Icon(painter = painterResource(id = R.drawable.round_skip_next_24), contentDescription = "")
+            Icon(painter = painterResource(resource = Res.drawable.round_skip_next_24), contentDescription = "")
         }
     }
 }
 
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun CurrentSegment(
     currentSegment: Segment,
@@ -219,11 +221,11 @@ fun CurrentSegment(
             targetState = currentSegment,
             transitionSpec = {
                 if (targetState.start > initialState.start) {
-                    slideInVertically { height -> height } + fadeIn() with
-                        slideOutVertically { height -> -height } + fadeOut()
+                    (slideInVertically { height -> height } + fadeIn()).togetherWith(
+                        slideOutVertically { height -> -height } + fadeOut())
                 } else {
-                    slideInVertically { height -> -height } + fadeIn() with
-                        slideOutVertically { height -> height } + fadeOut()
+                    (slideInVertically { height -> -height } + fadeIn()).togetherWith(
+                        slideOutVertically { height -> height } + fadeOut())
                 }.using(
                     SizeTransform(clip = false)
                 )
@@ -257,7 +259,7 @@ fun TopBar() {
         navigationIcon = {
             IconButton(onClick = { /*TODO*/ }) {
                 Icon(
-                    painter = painterResource(id = R.drawable.round_keyboard_arrow_down_24),
+                    painter = painterResource(resource = Res.drawable.round_keyboard_arrow_down_24),
                     contentDescription = ""
                 )
             }
@@ -265,7 +267,7 @@ fun TopBar() {
         actions = {
             IconButton(onClick = { /*TODO*/ }) {
                 Icon(
-                    painter = painterResource(id = R.drawable.baseline_more_vert_24),
+                    painter = painterResource(resource = Res.drawable.baseline_more_vert_24),
                     contentDescription = ""
                 )
             }
@@ -281,13 +283,16 @@ fun TopBar() {
 }
 
 fun formatSeconds(seconds: Int): String {
-    return "%d:%02d".format(seconds / 60, seconds % 60)
+    val hours = seconds / 3600
+    val minutes = (seconds % 3600) / 60
+    val remainingSeconds = seconds % 60
+
+    return when {
+        hours > 0 -> "$hours:${twoDigitFormat(minutes)}:${twoDigitFormat(remainingSeconds)}"
+        else -> "${twoDigitFormat(minutes)}:${twoDigitFormat(remainingSeconds)}"
+    }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun PreView() {
-    SeekerTheme {
-        NowPlayingScreen()
-    }
+fun twoDigitFormat(value: Int): String {
+    return if (value < 10) "0$value" else "$value"
 }

@@ -47,12 +47,39 @@ android {
 kotlin {
     androidTarget()
 
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64(),
+    ).forEach { iosTarget ->
+        iosTarget.binaries.framework {
+            baseName = "app"
+            isStatic = true
+        }
+    }
+
     sourceSets {
         val commonMain by getting
         commonMain.dependencies {
             implementation(compose.material)
-            implementation(compose.uiTooling)
         }
+
+        androidMain {
+            dependsOn(commonMain)
+            dependencies {
+                implementation(compose.preview)
+            }
+        }
+
+        val iosX64Main by getting
+        val iosArm64Main by getting
+        val iosSimulatorArm64Main by getting
+        val iosMain by creating {
+            iosX64Main.dependsOn(this)
+            iosArm64Main.dependsOn(this)
+            iosSimulatorArm64Main.dependsOn(this)
+        }
+        iosMain.dependsOn(commonMain)
     }
 }
 
