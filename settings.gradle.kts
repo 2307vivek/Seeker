@@ -13,5 +13,5 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "Seeker"
-include ':app'
-include ':seeker'
+include(":app")
+include(":seeker")
