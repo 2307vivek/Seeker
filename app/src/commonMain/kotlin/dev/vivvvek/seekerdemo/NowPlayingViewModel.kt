@@ -15,7 +15,8 @@
  */
 package dev.vivvvek.seekerdemo
 
-import dev.icerock.moko.mvvm.viewmodel.ViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dev.vivvvek.seeker.Segment
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

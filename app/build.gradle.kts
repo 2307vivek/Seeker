@@ -1,9 +1,30 @@
+import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+
 plugins {
     id("com.android.application")
     kotlin("multiplatform")
     kotlin("plugin.compose")
     id("org.jetbrains.compose")
 }
+
+
+// https://github.com/JetBrains/compose-multiplatform/issues/3123#issuecomment-1647435023
+val osName = System.getProperty("os.name")
+val targetOs = when {
+    osName == "Mac OS X" -> "macos"
+    osName.startsWith("Win") -> "windows"
+    osName.startsWith("Linux") -> "linux"
+    else -> error("Unsupported OS: $osName")
+}
+
+val targetArch = when (val osArch = System.getProperty("os.arch")) {
+    "x86_64", "amd64" -> "x64"
+    "aarch64" -> "arm64"
+    else -> error("Unsupported arch: $osArch")
+}
+
+val version = "0.8.8" // or any more recent version
+val target = "${targetOs}-${targetArch}"
 
 android {
     namespace = "dev.vivvvek.seekerdemo"
@@ -53,6 +74,8 @@ android {
 kotlin {
     androidTarget()
 
+    jvm()
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -72,11 +95,9 @@ kotlin {
             implementation(compose.material)
             implementation(compose.ui)
             implementation(compose.components.resources)
-
-            val mokoMvvm = "0.16.1"
-            api("dev.icerock.moko:mvvm-core:$mokoMvvm")
-            api("dev.icerock.moko:mvvm-compose:$mokoMvvm")
-            api("dev.icerock.moko:mvvm-flow-compose:$mokoMvvm")
+            implementation(compose.runtime)
+            implementation("org.jetbrains.androidx.navigation:navigation-compose:2.7.0-alpha07")
+            implementation("androidx.lifecycle:lifecycle-viewmodel:2.8.0")
         }
         androidMain {
             dependsOn(commonMain)
@@ -95,6 +116,16 @@ kotlin {
             iosSimulatorArm64Main.dependsOn(this)
         }
         iosMain.dependsOn(commonMain)
+
+        val jvmMain by getting
+        jvmMain.dependencies {
+            implementation("org.jetbrains.skiko:skiko-awt-runtime-$target:$version")
+            implementation("androidx.collection:collection:1.4.0")
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.8.1")
+            implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.0")
+            implementation(compose.desktop.currentOs)
+        }
+        jvmMain.dependsOn(commonMain)
     }
 }
 
@@ -107,4 +138,16 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4:$compose_ui_version")
     debugImplementation("androidx.compose.ui:ui-tooling:$compose_ui_version")
     debugImplementation("androidx.compose.ui:ui-test-manifest:$compose_ui_version")
+}
+
+compose.desktop {
+    application {
+        mainClass = "dev.vivvvek.seekerdemo.MainKt"
+
+        nativeDistributions {
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            packageName = "dev.vivvvek.seekerdemo"
+            packageVersion = "1.0.0"
+        }
+    }
 }

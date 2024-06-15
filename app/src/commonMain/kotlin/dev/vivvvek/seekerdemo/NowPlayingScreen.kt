@@ -58,6 +58,7 @@ import dev.vivvvek.seeker.Seeker
 import dev.vivvvek.seeker.SeekerDefaults
 import dev.vivvvek.seeker.Segment
 import dev.vivvvek.seeker.rememberSeekerState
+import kotlinx.coroutines.Dispatchers
 import org.jetbrains.compose.resources.painterResource
 import seeker.app.generated.resources.Res
 import seeker.app.generated.resources.baseline_more_vert_24
@@ -123,7 +124,10 @@ fun NowPlayingScreen() {
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.medium) {
-                        Text(formatSeconds(position.toInt()), style = MaterialTheme.typography.caption)
+                        Text(
+                            formatSeconds(position.toInt()),
+                            style = MaterialTheme.typography.caption
+                        )
                         Text(
                             formatSeconds(viewModel.length.toInt()),
                             style = MaterialTheme.typography.caption
@@ -185,7 +189,10 @@ fun Controls(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         IconButton(onClick = { /*TODO*/ }) {
-            Icon(painter = painterResource(resource = Res.drawable.round_skip_previous_24), contentDescription = "")
+            Icon(
+                painter = painterResource(resource = Res.drawable.round_skip_previous_24),
+                contentDescription = ""
+            )
         }
         IconButton(
             onClick = onPlayPause,
@@ -206,7 +213,10 @@ fun Controls(
             )
         }
         IconButton(onClick = { /*TODO*/ }) {
-            Icon(painter = painterResource(resource = Res.drawable.round_skip_next_24), contentDescription = "")
+            Icon(
+                painter = painterResource(resource = Res.drawable.round_skip_next_24),
+                contentDescription = ""
+            )
         }
     }
 }
@@ -281,6 +291,7 @@ fun TopBar() {
         backgroundColor = MaterialTheme.colors.background
     )
 }
+
 
 fun formatSeconds(seconds: Int): String {
     val hours = seconds / 3600

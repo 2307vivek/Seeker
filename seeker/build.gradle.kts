@@ -47,6 +47,8 @@ android {
 kotlin {
     androidTarget()
 
+    jvm()
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -62,6 +64,7 @@ kotlin {
         val commonMain by getting
         commonMain.dependencies {
             implementation(compose.material)
+            implementation("androidx.annotation:annotation:1.8.0")
         }
 
         androidMain {
@@ -80,6 +83,9 @@ kotlin {
             iosSimulatorArm64Main.dependsOn(this)
         }
         iosMain.dependsOn(commonMain)
+
+        val jvmMain by getting
+        jvmMain.dependsOn(commonMain)
     }
 }
 
