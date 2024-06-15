@@ -62,10 +62,8 @@ import androidx.compose.ui.graphics.drawscope.inset
 import androidx.compose.ui.graphics.drawscope.rotateRad
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.disabled
 import androidx.compose.ui.semantics.semantics
@@ -100,7 +98,6 @@ import kotlin.math.atan2
  * The first segment must start form the start value of the [range], and all the segments must lie in
  * the specified [range], else an [IllegalArgumentException] will be thrown.
  * will be thrown.
- * @param segmentChangeHapticFeedback enables haptic feedback when the current segment gets updated
  * @param enabled whether or not component is enabled and can be interacted with or not
  * @param colors [SeekerColors] that will be used to determine the color of the Slider parts in
  * different state. See [SeekerDefaults.seekerColors] to customize.
@@ -124,7 +121,6 @@ fun Seeker(
     onValueChange: (Float) -> Unit,
     onValueChangeFinished: (() -> Unit)? = null,
     segments: List<Segment> = emptyList(),
-    segmentChangeHapticFeedback: Boolean = false,
     enabled: Boolean = true,
     colors: SeekerColors = SeekerDefaults.seekerColors(),
     dimensions: SeekerDimensions = SeekerDefaults.seekerDimensions(),
@@ -166,14 +162,6 @@ fun Seeker(
 
         val segmentStarts = remember(segments, range, widthPx) {
             segmentToPxValues(segments, range, widthPx)
-        }
-
-        if (segmentChangeHapticFeedback) {
-            val haptics = LocalHapticFeedback.current
-
-            LaunchedEffect(state.currentSegment) {
-                haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-            }
         }
 
         LaunchedEffect(thumbValue, segments) {
