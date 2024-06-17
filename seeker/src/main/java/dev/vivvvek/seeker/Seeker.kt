@@ -169,11 +169,13 @@ fun Seeker(
             segmentToPxValues(segments, range, widthPx)
         }
 
+        var isDragging = false
         if (segmentChangeHapticFeedback) {
             val haptics = LocalHapticFeedback.current
 
             LaunchedEffect(state.currentSegment) {
-                haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                if(!isDragging) return@LaunchedEffect
+                haptics.performHapticFeedback(HapticFeedbackType.LongPress)
             }
         }
 
@@ -205,6 +207,7 @@ fun Seeker(
 
         LaunchedEffect(widthPx, range) {
             state.onDrag = {
+                isDragging = true
                 dragPositionX += it + pressOffset
 
                 pressOffset = 0f
@@ -243,6 +246,7 @@ fun Seeker(
             reverseDirection = isRtl,
             orientation = Orientation.Horizontal,
             onDragStopped = {
+                isDragging = false
                 onValueChangeFinished?.invoke()
             },
             interactionSource = interactionSource
