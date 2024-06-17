@@ -174,7 +174,7 @@ fun Seeker(
             val haptics = LocalHapticFeedback.current
 
             LaunchedEffect(state.currentSegment) {
-                if(!isDragging) return@LaunchedEffect
+                if (!isDragging) return@LaunchedEffect
                 haptics.performHapticFeedback(HapticFeedbackType.LongPress)
             }
         }
